@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/admin', function () {
+    return redirect()->route('admin.users.index');
+})->middleware(['auth', 'role:1']);
+
+Route::get('/admin/users', [UserController::class, 'index'])
+    ->middleware(['auth', 'role:1'])
+    ->name('admin.users.index'); 
