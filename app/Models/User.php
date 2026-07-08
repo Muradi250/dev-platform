@@ -2,28 +2,42 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Role;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-#[Fillable(['name', 'email', 'password', 'role_id'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+
+    // =========================
+    // Fillable
+    // =========================
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'status',
+    ];
+
+
+    // =========================
+    // Hidden
+    // =========================
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+
+    // =========================
+    // Casts
+    // =========================
     protected function casts(): array
     {
         return [
@@ -32,8 +46,100 @@ class User extends Authenticatable
         ];
     }
 
-    public function role(): BelongsTo
+
+    // =========================
+    // Filament Access Control
+    // =========================
+    public function canAccessPanel(Panel $panel): bool
     {
-        return $this->belongsTo(Role::class);
+        return $this->isActive()
+            && $this->hasAnyRole([
+                'super-admin',
+                'admin',
+            ]);
+    }
+
+
+    // =========================
+    // Status Helpers
+    // =========================
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
+
+    public function isBanned(): bool
+    {
+        return $this->status === 'banned';
+    }
+
+
+    // =========================
+    // Default Status
+    // =========================
+    protected static function booted(): void
+    {
+        static::creating(function ($user) {
+
+            if (!$user->status) {
+                $user->status = 'active';
+            }
+
+        });
+    }
+
+
+    // =========================
+    // Status Label
+    // =========================
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+
+            'active' => 'Active',
+
+            'pending' => 'Pending',
+
+            'suspended' => 'Suspended',
+
+            'banned' => 'Banned',
+
+            default => 'Inactive',
+
+        };
+    }
+
+
+    // =========================
+    // Status Color
+    // =========================
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+
+            'active' => 'success',
+
+            'pending' => 'warning',
+
+            'suspended' => 'danger',
+
+            'banned' => 'gray',
+
+            default => 'secondary',
+
+        };
     }
 }

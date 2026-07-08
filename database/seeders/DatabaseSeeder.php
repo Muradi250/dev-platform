@@ -10,7 +10,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // ✅ ساخت نقش‌ها (Spatie استاندارد)
+        // ✅ ساخت نقش‌ها (استاندارد Spatie)
         $roles = ['super-admin', 'admin', 'manager', 'user'];
 
         foreach ($roles as $role) {
@@ -20,11 +20,26 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // ✅ ساخت کاربر تست
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role_id' => Role::where('name', 'user')->first()->id,
-        ]);
+        // ✅ ساخت سوپر ادمین استاندارد
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'Amuradi250@gmail.com'],
+            [
+                'name' => 'super admin',
+                'password' => bcrypt('Amuradi25000@@@'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $superAdmin->assignRole('super-admin');
+
+        // ✅ ساخت کاربر تست (بدون خطا هنگام اجرای مجدد seeder)
+        $user = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $user->assignRole('user');
     }
 }

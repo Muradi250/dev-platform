@@ -19,6 +19,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+
     /**
      * Handle an incoming authentication request.
      */
@@ -28,8 +29,26 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+
+        $user = Auth::user();
+
+
+        // ==========================
+        // USER STATUS CONTROL
+        // ==========================
+
+        if ($user->status !== 'active') {
+
+            return redirect()
+                ->route('account.status');
+        }
+
+
+        return redirect()
+            ->intended(route('dashboard', absolute: false));
     }
+
+
 
     /**
      * Destroy an authenticated session.
@@ -38,9 +57,11 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('web')->logout();
 
+
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
 
         return redirect('/');
     }
