@@ -2,79 +2,305 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+
+use App\Models\User;
+
+
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+
+
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\IconColumn;
+
+
 use Filament\Tables\Table;
+
+
 
 class UsersTable
 {
+
+
     public static function configure(Table $table): Table
     {
+
+
         return $table
+
+
             ->columns([
 
-                // 👤 Name
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Name
+                |--------------------------------------------------------------------------
+                */
+
                 TextColumn::make('name')
+
                     ->label('Name')
+
                     ->searchable()
+
                     ->sortable()
+
                     ->icon('heroicon-o-user')
+
                     ->weight('bold'),
 
-                // 📧 Email
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Email
+                |--------------------------------------------------------------------------
+                */
+
                 TextColumn::make('email')
+
                     ->label('Email')
+
                     ->searchable()
+
                     ->copyable()
+
                     ->icon('heroicon-o-envelope'),
 
-                // 🎭 Roles (FIXED + CLEAN)
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Owner
+                |--------------------------------------------------------------------------
+                */
+
+                IconColumn::make('is_owner')
+
+                    ->label('Owner')
+
+                    ->boolean()
+
+                    ->trueIcon('heroicon-o-shield-check')
+
+                    ->falseIcon('heroicon-o-user')
+
+                    ->sortable(),
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Roles
+                |--------------------------------------------------------------------------
+                */
+
                 TextColumn::make('roles')
+
                     ->label('Roles')
-                    ->formatStateUsing(fn ($record) =>
-                        $record->roles->pluck('name')->join(', ')
+
+                    ->formatStateUsing(fn(User $record) =>
+
+                        $record->roles
+                            ->pluck('name')
+                            ->join(', ')
+
                     )
+
                     ->badge()
-                    ->color(fn ($record) =>
-                        $record->roles->contains('name', 'super-admin') ? 'danger' :
-                        ($record->roles->contains('name', 'admin') ? 'primary' : 'gray')
+
+                    ->color(fn(User $record) =>
+
+
+                        $record->is_owner
+
+                            ? 'danger'
+
+
+                            :
+
+                        (
+                            $record->roles
+                                ->contains('name','super-admin')
+
+                                ? 'warning'
+
+
+                                :
+
+                            (
+                                $record->roles
+                                    ->contains('name','admin')
+
+                                    ? 'primary'
+
+                                    : 'gray'
+                            )
+
+                        )
+
                     ),
 
-                // 🔐 STATUS (REAL SYSTEM)
+
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Status
+                |--------------------------------------------------------------------------
+                */
+
                 SelectColumn::make('status')
+
+                    ->label('Status')
+
                     ->options([
+
                         'active' => 'Active',
+
                         'pending' => 'Pending',
+
                         'suspended' => 'Suspended',
+
                         'banned' => 'Banned',
+
                     ])
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Owner Protection
+                    |--------------------------------------------------------------------------
+                    */
+
+                    ->disabled(fn(User $record) =>
+
+                        $record->is_owner
+
+                    )
+
                     ->sortable(),
 
-                // 📅 Created At
+
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Created
+                |--------------------------------------------------------------------------
+                */
+
                 TextColumn::make('created_at')
+
                     ->label('Created')
+
                     ->dateTime()
+
                     ->sortable(),
+
+
             ])
 
-            // 🔍 Filters (future upgrade)
-            ->filters([
-                //
-            ])
 
-            // ⚙ Actions
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Edit Action
+            |--------------------------------------------------------------------------
+            */
+
             ->recordActions([
-                EditAction::make(),
+
+
+                EditAction::make()
+
+                    /*
+                    Owner فقط خودش را Edit کند
+                    */
+
+                    ->hidden(fn(User $record) =>
+
+                        $record->is_owner
+
+                        &&
+
+                        auth()->id() !== $record->id
+
+                    ),
+
+
             ])
 
-            // 🧹 Bulk Actions
+
+
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Bulk Delete Protection
+            |--------------------------------------------------------------------------
+            */
+
             ->toolbarActions([
+
+
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+
+
+                    DeleteBulkAction::make()
+
+
+                        ->before(function ($records) {
+
+
+                            if (
+
+                                $records->contains(
+
+                                    fn(User $user)
+
+                                    => $user->is_owner
+
+                                )
+
+                            ) {
+
+
+                                throw new \Exception(
+
+                                    'System Owner account cannot be deleted.'
+
+                                );
+
+                            }
+
+
+                        }),
+
+
+
                 ]),
+
+
             ]);
+
+
     }
+
+
 }

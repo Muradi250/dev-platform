@@ -20,6 +20,7 @@ class AuthenticatedSessionController extends Controller
     }
 
 
+
     /**
      * Handle an incoming authentication request.
      */
@@ -33,6 +34,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
 
+
         // ==========================
         // USER STATUS CONTROL
         // ==========================
@@ -40,13 +42,34 @@ class AuthenticatedSessionController extends Controller
         if ($user->status !== 'active') {
 
             return redirect()
-                ->route('account.status');
+                ->route('account.status', [
+
+                    'locale' => request()->route('locale')
+                        ?? app()->getLocale(),
+
+                ]);
         }
 
 
+
+        // ==========================
+        // REDIRECT TO DASHBOARD
+        // ==========================
+
         return redirect()
-            ->intended(route('dashboard', absolute: false));
+            ->intended(
+
+                route('dashboard', [
+
+                    'locale' => request()->route('locale')
+                        ?? app()->getLocale(),
+
+                ])
+
+            );
     }
+
+
 
 
 
@@ -55,6 +78,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+
         Auth::guard('web')->logout();
 
 
@@ -63,6 +87,12 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
 
-        return redirect('/');
+
+        return redirect()
+            ->route('login', [
+
+                'locale' => app()->getLocale(),
+
+            ]);
     }
 }

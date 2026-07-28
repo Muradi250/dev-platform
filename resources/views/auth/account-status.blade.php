@@ -55,6 +55,7 @@
         @break
 
 
+
     @case('suspended')
 
         <div class="icon">⚠️</div>
@@ -67,6 +68,7 @@
         </p>
 
         @break
+
 
 
     @case('banned')
@@ -83,6 +85,7 @@
         @break
 
 
+
     @case('active')
 
         <div class="icon">✅</div>
@@ -96,6 +99,7 @@
         @break
 
 
+
     @default
 
         <div class="icon">❌</div>
@@ -107,20 +111,30 @@
             Please contact administrator.
         </p>
 
+
 @endswitch
+
 
 
 <hr>
 
+
 <p>
+
     <strong>Support Email:</strong>
+
     <br>
+
     {{ $supportEmail }}
+
 </p>
 
 
-<a href="{{ route('login') }}">
+
+<a href="{{ route('login', ['locale'=>app()->getLocale()]) }}">
+
     Return to Login
+
 </a>
 
 

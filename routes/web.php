@@ -5,15 +5,63 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AccountStatusController;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| Public Website Routes (Multi Language)
 |--------------------------------------------------------------------------
+|
+| Supported Locales:
+| en = English
+| fa = Persian
+| ps = Pashto
+|
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::prefix('{locale}')
+    ->middleware('setLocale')
+    ->whereIn('locale', [
+        'en',
+        'fa',
+        'ps',
+    ])
+    ->group(function () {
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Public Home
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/', function () {
+
+            return view('public.home');
+
+        })->name('public.home');
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard (Localized)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/dashboard', function () {
+
+            return view('dashboard');
+
+        })
+        ->middleware([
+            'auth',
+            'verified',
+            'status',
+        ])
+        ->name('dashboard');
+
+    });
+
 
 
 /*
@@ -26,19 +74,27 @@ Route::get('/account-status', [AccountStatusController::class, 'index'])
     ->name('account.status');
 
 
+
 /*
 |--------------------------------------------------------------------------
-| Dashboard (User Panel)
+| Default Dashboard Redirect
 |--------------------------------------------------------------------------
+|
+| جلوگیری از خراب شدن لینک های قبلی /dashboard
+|
 */
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware([
+
+    return redirect('/en/dashboard');
+
+})
+->middleware([
     'auth',
     'verified',
     'status',
-])->name('dashboard');
+]);
+
 
 
 /*
@@ -52,29 +108,31 @@ Route::middleware([
     'status',
 ])->group(function () {
 
+
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
+
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
 
+
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
 
 });
 
 
-require __DIR__.'/auth.php';
-
 
 /*
 |--------------------------------------------------------------------------
-| Filament Admin Panel
+| Laravel Authentication Routes
 |--------------------------------------------------------------------------
-|
-| Route های /admin توسط Filament مدیریت می‌شوند.
-|
 */
+
+require __DIR__.'/auth.php';
+
 
 
 /*

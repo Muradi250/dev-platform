@@ -1,0 +1,410 @@
+/* Base */
+
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+
+    box-sizing:border-box;
+
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+    position:relative;
+}
+
+
+body {
+
+    -webkit-text-size-adjust:none;
+
+    background-color:#f8fafc;
+
+    color:#334155;
+
+    height:100%;
+
+    line-height:1.6;
+
+    margin:0;
+
+    padding:0;
+
+    width:100%!important;
+
+}
+
+
+
+p {
+
+    font-size:16px;
+
+    line-height:1.7em;
+
+    color:#475569;
+
+}
+
+
+
+/* Layout */
+
+
+.wrapper {
+
+    background-color:#f1f5f9;
+
+    width:100%;
+
+    margin:0;
+
+    padding:40px 0;
+
+}
+
+
+
+.content {
+
+    width:100%;
+
+}
+
+
+
+/* Header */
+
+
+.header {
+
+    padding:35px 0 25px;
+
+    text-align:center;
+
+}
+
+
+
+.header a {
+
+    text-decoration:none;
+
+}
+
+
+
+/* Brand */
+
+
+.brand-title {
+
+    color:#2563eb;
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+
+
+.brand-subtitle {
+
+    color:#64748b;
+
+    font-size:14px;
+
+    margin-top:8px;
+
+}
+
+
+
+/* Email Card */
+
+
+.body {
+
+    background-color:#f1f5f9;
+
+    width:100%;
+
+}
+
+
+
+.inner-body {
+
+    background:#ffffff;
+
+    border:1px solid #e2e8f0;
+
+    border-radius:16px;
+
+    box-shadow:
+
+    0 10px 25px rgba(15,23,42,0.08);
+
+    width:570px;
+
+}
+
+
+
+/* Content */
+
+
+.content-cell {
+
+    padding:40px;
+
+}
+
+
+
+/* Links */
+
+
+.inner-body a {
+
+    color:#2563eb;
+
+    word-break:break-all;
+
+}
+
+
+
+/* Button */
+
+
+.action {
+
+    margin:35px auto;
+
+    text-align:center;
+
+}
+
+
+
+.button {
+
+    border-radius:10px;
+
+    color:#ffffff!important;
+
+    display:inline-block;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+}
+
+
+
+.button-primary {
+
+    background:#2563eb;
+
+    border:
+
+    12px solid #2563eb;
+
+}
+
+
+
+.button-primary:hover {
+
+    background:#1d4ed8;
+
+}
+
+
+
+/* Subcopy */
+
+
+.subcopy {
+
+    border-top:1px solid #e2e8f0;
+
+    margin-top:30px;
+
+    padding-top:25px;
+
+}
+
+
+.subcopy p {
+
+    font-size:13px;
+
+    color:#64748b;
+
+}
+
+
+
+/* Footer */
+
+
+.footer {
+
+    width:570px;
+
+    margin:35px auto 0;
+
+    text-align:center;
+
+}
+
+
+
+.footer .content-cell {
+
+    padding:25px 20px;
+
+}
+
+
+
+.footer p {
+
+    margin:0;
+
+    color:#94a3b8;
+
+    font-size:12px;
+
+    line-height:1.7;
+
+    text-align:center;
+
+}
+
+
+
+/* Footer Brand */
+
+
+.footer-brand {
+
+    color:#475569;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+
+
+.footer-description {
+
+    color:#64748b;
+
+    font-size:12px;
+
+    margin-top:6px;
+
+}
+
+
+
+.footer-copy {
+
+    color:#94a3b8;
+
+    font-size:12px;
+
+    margin-top:18px;
+
+}
+
+
+
+.footer-system {
+
+    color:#cbd5e1;
+
+    font-size:11px;
+
+    margin-top:8px;
+
+}
+
+
+
+/* Panel */
+
+
+.panel {
+
+    border-left:4px solid #2563eb;
+
+    margin:25px 0;
+
+}
+
+
+
+.panel-content {
+
+    background:#f8fafc;
+
+    padding:18px;
+
+}
+
+
+
+/* Mobile */
+
+
+@media only screen and (max-width:600px){
+
+
+.inner-body {
+
+    width:100%!important;
+
+    border-radius:0!important;
+
+}
+
+
+
+.footer {
+
+    width:100%!important;
+
+}
+
+
+
+.content-cell {
+
+    padding:25px!important;
+
+}
+
+
+
+.brand-title {
+
+    font-size:24px!important;
+
+}
+
+
+}
