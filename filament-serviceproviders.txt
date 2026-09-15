@@ -1,0 +1,10 @@
+C:\wamp64\www\dev-platform\vendor\filament\actions\src\ActionsServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\filament\src\FilamentServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\forms\src\FormsServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\infolists\src\InfolistsServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\notifications\src\NotificationsServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\query-builder\src\QueryBuilderServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\schemas\src\SchemasServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\support\src\SupportServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\tables\src\TablesServiceProvider.php
+C:\wamp64\www\dev-platform\vendor\filament\widgets\src\WidgetsServiceProvider.php

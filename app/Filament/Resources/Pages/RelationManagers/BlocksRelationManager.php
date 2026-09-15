@@ -2,519 +2,185 @@
 
 namespace App\Filament\Resources\Pages\RelationManagers;
 
+use App\Blocks\BlockTypes;
+use App\Blocks\BlockSchema;
 
-/*
-|--------------------------------------------------------------------------
-| Actions
-|--------------------------------------------------------------------------
-*/
+use Filament\Resources\RelationManagers\RelationManager;
+
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
+
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 
 
-/*
-|--------------------------------------------------------------------------
-| Form Components
-|--------------------------------------------------------------------------
-*/
-
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Repeater;
-
-
-/*
-|--------------------------------------------------------------------------
-| Relation Manager
-|--------------------------------------------------------------------------
-*/
-
-use Filament\Resources\RelationManagers\RelationManager;
-
-
-/*
-|--------------------------------------------------------------------------
-| Schema
-|--------------------------------------------------------------------------
-*/
-
-use Filament\Schemas\Schema;
-
-
-/*
-|--------------------------------------------------------------------------
-| Table
-|--------------------------------------------------------------------------
-*/
-
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-
-
-
 class BlocksRelationManager extends RelationManager
 {
-
-
     /*
     |--------------------------------------------------------------------------
-    | ارتباط با Page
+    | Relationship
     |--------------------------------------------------------------------------
-    |
-    | هر صفحه چند Block دارد.
-    |
     */
 
     protected static string $relationship = 'blocks';
 
 
-
-
-
-
     /*
     |--------------------------------------------------------------------------
-    | فرم ایجاد و ویرایش Block
+    | Form
     |--------------------------------------------------------------------------
-    |
-    | اینجا Page Builder ساخته می‌شود.
-    |
-    | هر Block فرم اختصاصی خودش را دارد.
-    |
     */
 
     public function form(Schema $schema): Schema
     {
+        return $schema
 
-        return $schema->components([
+            ->components([
 
+                /*
+                |--------------------------------------------------------------------------
+                | Block Type
+                |--------------------------------------------------------------------------
+                */
 
+                Select::make('type')
 
+                    ->label('Block Type')
 
-            /*
-            |--------------------------------------------------------------------------
-            | انتخاب نوع Block
-            |--------------------------------------------------------------------------
-            */
+                    ->options(
+                        BlockTypes::all()
+                    )
 
-            Select::make('type')
+                    ->searchable()
 
-                ->label('Block Type')
+                    ->live()
 
-                ->options([
+                    ->required()
 
-                    'hero' =>
-                    'Hero Section',
+                    ->afterStateUpdated(
+                        function (
+                            Select $component,
+                            callable $set
+                        ): void {
 
-                    'services' =>
-                    'Services',
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Clear previous block data
+                            |--------------------------------------------------------------------------
+                            */
 
-                    'team' =>
-                    'Team',
+                            $set('data', []);
 
-                    'faq' =>
-                    'FAQ',
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Initialize Dynamic Schema
+                            |--------------------------------------------------------------------------
+                            |
+                            | This is important for Filament 5.
+                            |
+                            | When the type changes, the dynamic schema
+                            | must be initialized immediately.
+                            |
+                            */
 
-                    'pricing' =>
-                    'Pricing',
+                            $component
+                                ->getContainer()
+                                ->getComponent('dynamicBlockSchema')
+                                ->getChildSchema()
+                                ->fill();
 
-                ])
+                        }
+                    ),
 
-                ->live()
 
-                ->required(),
+                /*
+                |--------------------------------------------------------------------------
+                | Sort Order
+                |--------------------------------------------------------------------------
+                */
 
+                TextInput::make('sort_order')
 
+                    ->label('Sort Order')
 
+                    ->numeric()
 
+                    ->default(0),
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HERO SECTION
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | Active
+                |--------------------------------------------------------------------------
+                */
 
-            TextInput::make('data.title')
+                Toggle::make('is_active')
 
-                ->label('Hero Title')
+                    ->label('Active')
 
-                ->visible(fn ($get) =>
-                    $get('type') === 'hero'
-                ),
+                    ->default(true),
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | Dynamic Block Schema
+                |--------------------------------------------------------------------------
+                */
 
-            Textarea::make('data.subtitle')
+                Group::make()
 
-                ->label('Hero Subtitle')
+                    ->schema(
+                        function (Get $get): array {
 
-                ->rows(3)
+                            return BlockSchema::make(
+                                $get('type')
+                            );
 
-                ->visible(fn ($get) =>
-                    $get('type') === 'hero'
-                ),
+                        }
+                    )
 
+                    ->key('dynamicBlockSchema')
 
+                    ->columnSpanFull(),
 
-            TextInput::make('data.button_text')
-
-                ->label('Button Text')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'hero'
-                ),
-
-
-
-            TextInput::make('data.button_url')
-
-                ->label('Button URL')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'hero'
-                ),
-
-
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SERVICES SECTION
-            |--------------------------------------------------------------------------
-            */
-
-            TextInput::make('data.section_title')
-
-                ->label('Services Section Title')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'services'
-                ),
-
-
-
-            Repeater::make('data.items')
-
-                ->label('Services')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'services'
-                )
-
-                ->schema([
-
-
-                    TextInput::make('icon')
-
-                        ->label('Icon'),
-
-
-
-                    TextInput::make('title')
-
-                        ->label('Service Title')
-
-                        ->required(),
-
-
-
-                    Textarea::make('description')
-
-                        ->label('Description')
-
-                        ->rows(3),
-
-
-                ])
-
-                ->defaultItems(1)
-
-                ->addActionLabel('Add Service')
-
-                ->collapsible(),
-
-
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | TEAM SECTION
-            |--------------------------------------------------------------------------
-            */
-
-            TextInput::make('data.section_title')
-
-                ->label('Team Section Title')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'team'
-                ),
-
-
-
-            Repeater::make('data.members')
-
-                ->label('Team Members')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'team'
-                )
-
-                ->schema([
-
-
-                    TextInput::make('name')
-
-                        ->label('Name')
-
-                        ->required(),
-
-
-
-                    TextInput::make('position')
-
-                        ->label('Position'),
-
-
-
-                    Textarea::make('bio')
-
-                        ->label('Biography'),
-
-                ])
-
-                ->addActionLabel('Add Member')
-
-                ->collapsible(),
-
-
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | FAQ SECTION
-            |--------------------------------------------------------------------------
-            */
-
-            TextInput::make('data.section_title')
-
-                ->label('FAQ Section Title')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'faq'
-                ),
-
-
-
-            Repeater::make('data.questions')
-
-                ->label('FAQ Questions')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'faq'
-                )
-
-                ->schema([
-
-
-                    TextInput::make('question')
-
-                        ->label('Question')
-
-                        ->required(),
-
-
-
-                    Textarea::make('answer')
-
-                        ->label('Answer')
-
-                        ->required(),
-
-
-                ])
-
-                ->addActionLabel('Add Question')
-
-                ->collapsible(),
-
-
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | PRICING SECTION
-            |--------------------------------------------------------------------------
-            */
-
-            TextInput::make('data.section_title')
-
-                ->label('Pricing Section Title')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'pricing'
-                ),
-
-
-
-            Repeater::make('data.plans')
-
-                ->label('Pricing Plans')
-
-                ->visible(fn ($get) =>
-                    $get('type') === 'pricing'
-                )
-
-                ->schema([
-
-
-                    TextInput::make('name')
-
-                        ->label('Plan Name')
-
-                        ->required(),
-
-
-
-                    TextInput::make('price')
-
-                        ->label('Price'),
-
-
-
-                    Textarea::make('features')
-
-                        ->label('Features'),
-
-
-
-                    TextInput::make('button_text')
-
-                        ->label('Button Text'),
-
-
-
-                    TextInput::make('button_url')
-
-                        ->label('Button URL'),
-
-                ])
-
-                ->addActionLabel('Add Plan')
-
-                ->collapsible(),
-
-
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | ترتیب نمایش Block
-            |--------------------------------------------------------------------------
-            */
-
-            TextInput::make('sort_order')
-
-                ->label('Order')
-
-                ->numeric()
-
-                ->default(1),
-
-
-        ]);
-
+            ]);
     }
-
-
-
-
-
-
 
 
     /*
     |--------------------------------------------------------------------------
-    | جدول نمایش Block ها
+    | Table
     |--------------------------------------------------------------------------
     */
 
     public function table(Table $table): Table
     {
-
         return $table
-
 
             ->columns([
 
-
                 TextColumn::make('type')
-
-                    ->label('Block Type')
-
-                    ->formatStateUsing(fn ($state) => match ($state) {
-
-
-                        'hero' =>
-                        'Hero Section',
-
-
-                        'services' =>
-                        'Services',
-
-
-                        'team' =>
-                        'Team',
-
-
-                        'faq' =>
-                        'FAQ',
-
-
-                        'pricing' =>
-                        'Pricing',
-
-
-                        default =>
-                        $state,
-
-
-                    }),
-
-
+                    ->label('Block')
+                    ->searchable(),
 
                 TextColumn::make('sort_order')
-
                     ->label('Order'),
 
-
-
                 IconColumn::make('is_active')
-
                     ->label('Active')
-
                     ->boolean(),
 
-
             ])
-
-
-
 
             ->headerActions([
 
@@ -522,18 +188,16 @@ class BlocksRelationManager extends RelationManager
 
             ])
 
-
-
-
-            ->recordActions([
+            ->actions([
 
                 EditAction::make(),
 
                 DeleteAction::make(),
 
-            ]);
+            ])
 
+            ->defaultSort(
+                'sort_order'
+            );
     }
-
-
 }

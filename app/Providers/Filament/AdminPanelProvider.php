@@ -3,6 +3,12 @@
 namespace App\Providers\Filament;
 
 
+
+
+
+
+
+
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 
@@ -45,11 +51,13 @@ class AdminPanelProvider extends PanelProvider
             |--------------------------------------------------------------------------
             */
 
+
             ->default()
 
             ->id('admin')
 
             ->path('admin')
+
 
 
 
@@ -60,13 +68,18 @@ class AdminPanelProvider extends PanelProvider
             |--------------------------------------------------------------------------
             */
 
-            ->login()
 
-            ->authGuard('web')
+          ->login()
 
+->authGuard('web')
 
+->renderHook(
+    \Filament\View\PanelsRenderHook::TOPBAR_END,
+    fn () => view('filament.admin.language-switcher')
+)
 
-
+  
+          
 
 
             /*
@@ -74,6 +87,7 @@ class AdminPanelProvider extends PanelProvider
             | Theme
             |--------------------------------------------------------------------------
             */
+
 
             ->colors([
 
@@ -87,11 +101,14 @@ class AdminPanelProvider extends PanelProvider
 
 
 
+
+
             /*
             |--------------------------------------------------------------------------
             | Resources
             |--------------------------------------------------------------------------
             */
+
 
             ->discoverResources(
 
@@ -112,6 +129,7 @@ class AdminPanelProvider extends PanelProvider
             | Pages
             |--------------------------------------------------------------------------
             */
+
 
             ->discoverPages(
 
@@ -135,11 +153,13 @@ class AdminPanelProvider extends PanelProvider
 
 
 
+
             /*
             |--------------------------------------------------------------------------
             | Widgets
             |--------------------------------------------------------------------------
             */
+
 
             ->discoverWidgets(
 
@@ -170,6 +190,7 @@ class AdminPanelProvider extends PanelProvider
             |--------------------------------------------------------------------------
             */
 
+
             ->middleware([
 
 
@@ -180,6 +201,18 @@ class AdminPanelProvider extends PanelProvider
 
 
                 StartSession::class,
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Admin Language Switch
+                |--------------------------------------------------------------------------
+                */
+
+
+                \App\Http\Middleware\SetAdminLocale::class,
+
 
 
                 AuthenticateSession::class,
@@ -203,11 +236,15 @@ class AdminPanelProvider extends PanelProvider
 
 
 
+
+
+
             /*
             |--------------------------------------------------------------------------
             | Authentication Middleware
             |--------------------------------------------------------------------------
             */
+
 
             ->authMiddleware([
 

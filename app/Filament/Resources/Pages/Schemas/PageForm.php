@@ -2,261 +2,287 @@
 
 namespace App\Filament\Resources\Pages\Schemas;
 
+/*
+|--------------------------------------------------------------------------
+| Page Settings - General
+|--------------------------------------------------------------------------
+*/
 
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Section;
+use App\Filament\Resources\Pages\Schemas\PageSettings\General\GeneralSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Template & Layout
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Layout\TemplateSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Layout\LayoutSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Layout\ContainerSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Layout\WidthSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Layout\SpacingSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Header
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Header\HeaderSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Navigation
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Navigation\NavigationSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Sidebar
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Sidebar\SidebarSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Theme
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Theme\ThemeSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Responsive
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\ResponsiveSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Access
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Access\AccessSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - SEO
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\SeoSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Publishing
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Publishing\PublishingSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Advanced
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Advanced\AdvancedSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Page Settings - Footer
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\FooterSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\FooterItems;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\FooterVisibility;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\FooterAppearance;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\FooterBehavior;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Footer\BrandSocialSettings;
+
+/*
+|--------------------------------------------------------------------------
+| Filament Schema Components
+|--------------------------------------------------------------------------
+*/
+
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
-use Illuminate\Support\Str;
-
-
+/*
+|--------------------------------------------------------------------------
+| Page Form
+|--------------------------------------------------------------------------
+*/
 
 class PageForm
 {
-
-
     public static function configure(Schema $schema): Schema
     {
-
         return $schema
-
             ->components([
 
-
-
                 /*
                 |--------------------------------------------------------------------------
-                | Page Information
+                | Page Builder Tabs
                 |--------------------------------------------------------------------------
                 */
 
+                Tabs::make('Page Builder')
+                    ->tabs([
 
-                Section::make('Page Information')
+                        /*
+                        |--------------------------------------------------------------------------
+                        | General
+                        |--------------------------------------------------------------------------
+                        */
 
-                    ->schema([
-
-
-
-                        TextInput::make('title')
-
-                            ->label('Page Title')
-
-                            ->required()
-
-                            ->maxLength(255)
-
-
-
-                            ->live(onBlur: true)
-
-
-
-                            ->afterStateUpdated(function ($state, callable $set) {
-
-
-                                $set(
-
-                                    'slug',
-
-                                    Str::slug($state)
-
-                                );
-
-
-                            }),
-
-
-
-
-
-
-                        TextInput::make('slug')
-
-                            ->label('URL Slug')
-
-                            ->required()
-
-                            ->maxLength(255)
-
-
-
-                            ->unique(
-
-                                table: 'pages',
-
-                                column: 'slug',
-
-                                ignoreRecord: true
-
+                        Tab::make('General')
+                            ->schema(
+                                GeneralSettings::schema()
                             ),
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Template & Layout
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Template & Layout')
+                            ->schema([
+                                ...TemplateSettings::schema(),
+                                ...LayoutSettings::schema(),
+                                ...ContainerSettings::schema(),
+                                ...WidthSettings::schema(),
+                                ...SpacingSettings::schema(),
+                            ]),
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Header
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Header')
+                            ->schema(
+                                HeaderSettings::schema()
+                            ),
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Navigation
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Navigation')
+                            ->schema(
+                                NavigationSettings::schema()
+                            ),
 
-                        Select::make('locale')
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Sidebar & Info
+                        |--------------------------------------------------------------------------
+                        */
 
-                            ->label('Language')
+                        Tab::make('Sidebar & Info')
+                            ->schema(
+                                SidebarSettings::schema()
+                            ),
 
-                            ->options([
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Footer
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Footer')
+                            ->schema([
+                                ...FooterSettings::schema(),
+                                ...FooterItems::schema(),
+                                ...FooterVisibility::schema(),
+                                ...FooterAppearance::schema(),
+                                ...FooterBehavior::schema(),
+                                ...BrandSocialSettings::schema(),
+                            ]),
 
-                                'en' => 'English',
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Theme
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Theme')
+                            ->schema(
+                                ThemeSettings::schema()
+                            ),
 
-                                'fa' => 'فارسی',
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Responsive
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Responsive')
+                            ->schema(
+                                ResponsiveSettings::schema()
+                            ),
 
-                                'ps' => 'پښتو',
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Access
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Access')
+                            ->schema(
+                                AccessSettings::schema()
+                            ),
 
-                            ])
+                        /*
+                        |--------------------------------------------------------------------------
+                        | SEO
+                        |--------------------------------------------------------------------------
+                        */
 
-                            ->default('en')
+                        Tab::make('SEO')
+                            ->schema(
+                                SeoSettings::schema()
+                            ),
 
-                            ->required(),
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Publishing
+                        |--------------------------------------------------------------------------
+                        */
 
+                        Tab::make('Publishing')
+                            ->schema(
+                                PublishingSettings::schema()
+                            ),
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Advanced
+                        |--------------------------------------------------------------------------
+                        */
+
+                        Tab::make('Advanced')
+                            ->schema(
+                                AdvancedSettings::schema()
+                            ),
 
                     ])
-
-                    ->columns(2),
-
-
-
-
-
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Page Content
-                |--------------------------------------------------------------------------
-                */
-
-
-                Section::make('Content')
-
-                    ->schema([
-
-
-
-                        Textarea::make('content')
-
-                            ->label('Page Content')
-
-                            ->rows(8),
-
-
-
-                    ]),
-
-
-
-
-
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Publishing
-                |--------------------------------------------------------------------------
-                */
-
-
-                Section::make('Publishing')
-
-
-                    ->schema([
-
-
-
-                        Select::make('status')
-
-
-                            ->label('Status')
-
-
-                            ->options([
-
-
-
-                                'draft' => 'Draft',
-
-
-                                'published' => 'Published',
-
-
-                            ])
-
-
-                            ->default('draft')
-
-
-                            ->required(),
-
-
-
-                    ]),
-
-
-
-
-
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | SEO Settings
-                |--------------------------------------------------------------------------
-                */
-
-
-                Section::make('SEO Settings')
-
-
-                    ->schema([
-
-
-
-
-                        TextInput::make('seo_title')
-
-
-                            ->label('SEO Title')
-
-
-                            ->maxLength(60),
-
-
-
-
-
-
-                        Textarea::make('seo_description')
-
-
-                            ->label('SEO Description')
-
-
-                            ->rows(4)
-
-
-                            ->maxLength(160),
-
-
-
-                    ]),
-
-
-
+                    ->columnSpanFull(),
 
             ]);
-
     }
-
 }

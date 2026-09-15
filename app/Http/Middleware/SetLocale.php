@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
@@ -21,17 +20,14 @@ class SetLocale
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Get locale from URL route parameter
         $locale = $request->route('locale');
 
-        // Check if locale is supported
-        if (! in_array($locale, $this->locales)) {
-            $locale = config('app.locale');
+        if (! in_array($locale, $this->locales, true)) {
+            $locale = config('app.locale', 'en');
         }
 
-        // Set application locale
         App::setLocale($locale);
 
         return $next($request);

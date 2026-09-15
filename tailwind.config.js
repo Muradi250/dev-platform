@@ -1,21 +1,69 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
+/*
+|--------------------------------------------------------------------------
+| Tailwind CSS Configuration
+|--------------------------------------------------------------------------
+|
+| Tailwind CSS v3.4.19
+|
+|--------------------------------------------------------------------------
+*/
+
 
 /** @type {import('tailwindcss').Config} */
+
 export default {
+
+
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
+
+
         './resources/views/**/*.blade.php',
+
+        './resources/js/**/*.js',
+
+        './app/**/*.php',
+
+
     ],
 
+
+
     theme: {
+
+
         extend: {
+
+
+
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+
+
+                sans: [
+
+
+                    'Figtree',
+
+
+                    'ui-sans-serif',
+
+
+                    'system-ui',
+
+
+                ],
+
+
             },
+
+
         },
+
+
     },
 
-    plugins: [forms],
+
+
+    plugins: [],
+
+
 };

@@ -7,15 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class Page extends Model
 {
     use HasFactory;
 
-
     /*
     |--------------------------------------------------------------------------
-    | ستون‌هایی که اجازه ذخیره دارند
+    | Fillable Fields
     |--------------------------------------------------------------------------
     */
 
@@ -37,38 +35,35 @@ class Page extends Model
 
         'published_at',
 
-    ];
+        'settings',
 
+    ];
 
 
     /*
     |--------------------------------------------------------------------------
-    | تبدیل خودکار داده‌ها
+    | Casts
     |--------------------------------------------------------------------------
+    |
+    | settings از JSON دیتابیس به Array تبدیل می‌شود.
+    |
     */
 
     protected $casts = [
 
         'published_at' => 'datetime',
 
-    ];
+        'settings' => 'array',
 
+    ];
 
 
     /*
     |--------------------------------------------------------------------------
-    | رابطه با Block ها
+    | Page Blocks
     |--------------------------------------------------------------------------
     |
-    | هر Page چند Block دارد.
-    |
-    | مثال:
-    |
-    | Home Page
-    |   |
-    |   ├── Hero
-    |   ├── Services
-    |   └── FAQ
+    | هر Page می‌تواند چندین Block داشته باشد.
     |
     */
 
@@ -79,13 +74,12 @@ class Page extends Model
     }
 
 
-
     /*
     |--------------------------------------------------------------------------
-    | سازنده صفحه
+    | Page Creator
     |--------------------------------------------------------------------------
     |
-    | هر صفحه توسط یک User ساخته می‌شود.
+    | مشخص می‌کند این Page توسط کدام User ساخته شده است.
     |
     */
 
@@ -93,5 +87,4 @@ class Page extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-
 }

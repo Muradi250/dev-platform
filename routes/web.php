@@ -1,9 +1,36 @@
+
 <?php
 
+use App\Http\Controllers\AdminLocaleController;
+use App\Http\Controllers\Auth\AccountStatusController;
 use App\Http\Controllers\BrainController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Auth\AccountStatusController;
+use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\TestimonialController;
 use Illuminate\Support\Facades\Route;
+
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| auth.php MUST be loaded before the dynamic public page route.
+|
+| Otherwise:
+|
+| /en/login
+| /en/register
+| /en/forgot-password
+|
+| can be captured by:
+|
+| /{locale}/{slug}
+|
+*/
+
+require __DIR__ . '/auth.php';
 
 
 /*
@@ -12,6 +39,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Supported Locales:
+|
 | en = English
 | fa = Persian
 | ps = Pashto
@@ -34,17 +62,36 @@ Route::prefix('{locale}')
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/', function () {
-
-            return view('public.home');
-
-        })->name('public.home');
-
+        Route::get('/', [
+            PublicPageController::class,
+            'home',
+        ])
+        ->name('public.home');
 
 
         /*
         |--------------------------------------------------------------------------
-        | Dashboard (Localized)
+        | Testimonials
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/testimonials', [
+            TestimonialController::class,
+            'create',
+        ])
+        ->name('testimonials.create');
+
+
+        Route::post('/testimonials', [
+            TestimonialController::class,
+            'store',
+        ])
+        ->name('testimonials.store');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
         |--------------------------------------------------------------------------
         */
 
@@ -60,8 +107,31 @@ Route::prefix('{locale}')
         ])
         ->name('dashboard');
 
-    });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Dynamic Public Pages
+        |--------------------------------------------------------------------------
+        |
+        | IMPORTANT:
+        | This route MUST be the LAST route inside this locale group.
+        |
+        | Examples:
+        |
+        | /en/dev-platform
+        | /fa/dev-platform
+        | /ps/dev-platform
+        |
+        */
+
+        Route::get('/{slug}', [
+            PublicPageController::class,
+            'show',
+        ])
+        ->where('slug', '[A-Za-z0-9\-]+')
+        ->name('public.page');
+
+    });
 
 
 /*
@@ -70,9 +140,11 @@ Route::prefix('{locale}')
 |--------------------------------------------------------------------------
 */
 
-Route::get('/account-status', [AccountStatusController::class, 'index'])
-    ->name('account.status');
-
+Route::get('/account-status', [
+    AccountStatusController::class,
+    'index',
+])
+->name('account.status');
 
 
 /*
@@ -80,7 +152,7 @@ Route::get('/account-status', [AccountStatusController::class, 'index'])
 | Default Dashboard Redirect
 |--------------------------------------------------------------------------
 |
-| جلوگیری از خراب شدن لینک های قبلی /dashboard
+| Prevent old /dashboard links from breaking.
 |
 */
 
@@ -96,7 +168,6 @@ Route::get('/dashboard', function () {
 ]);
 
 
-
 /*
 |--------------------------------------------------------------------------
 | Authenticated User Routes
@@ -106,33 +177,37 @@ Route::get('/dashboard', function () {
 Route::middleware([
     'auth',
     'status',
-])->group(function () {
+])
+->group(function () {
 
 
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+    /*
+    |--------------------------------------------------------------------------
+    | Profile
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/profile', [
+        ProfileController::class,
+        'edit',
+    ])
+    ->name('profile.edit');
 
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::patch('/profile', [
+        ProfileController::class,
+        'update',
+    ])
+    ->name('profile.update');
 
 
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
-
+    Route::delete('/profile', [
+        ProfileController::class,
+        'destroy',
+    ])
+    ->name('profile.destroy');
 
 });
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Laravel Authentication Routes
-|--------------------------------------------------------------------------
-*/
-
-require __DIR__.'/auth.php';
-
 
 
 /*
@@ -141,9 +216,55 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
-Route::get('/brain', [BrainController::class, 'index'])
-    ->middleware([
-        'auth',
-        'status',
-    ])
-    ->name('brain.dashboard');
+Route::get('/brain', [
+    BrainController::class,
+    'index',
+])
+->middleware([
+    'auth',
+    'status',
+])
+->name('brain.dashboard');
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Panel Language Switcher
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/admin/language/{locale}', function (string $locale) {
+
+    abort_unless(
+        in_array($locale, [
+            'en',
+            'fa',
+            'ps',
+        ]),
+        404
+    );
+
+
+    session([
+        'admin_locale' => $locale,
+    ]);
+
+
+    return redirect()->back();
+
+})
+->name('admin.language');
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Language Switch (POST)
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/admin/locale', [
+    AdminLocaleController::class,
+    'switch',
+])
+->name('admin.locale');
+
