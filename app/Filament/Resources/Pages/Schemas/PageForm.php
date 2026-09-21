@@ -61,6 +61,10 @@ use App\Filament\Resources\Pages\Schemas\PageSettings\Theme\ThemeSettings;
 */
 
 use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\ResponsiveSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\Breakpoints;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\MobileSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\TabletSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\Responsive\DesktopSettings;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +81,10 @@ use App\Filament\Resources\Pages\Schemas\PageSettings\Access\AccessSettings;
 */
 
 use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\SeoSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\MetaSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\OpenGraphSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\RobotsSettings;
+use App\Filament\Resources\Pages\Schemas\PageSettings\SEO\StructuredDataSettings;
 
 /*
 |--------------------------------------------------------------------------
@@ -232,9 +240,13 @@ class PageForm
                         */
 
                         Tab::make('Responsive')
-                            ->schema(
-                                ResponsiveSettings::schema()
-                            ),
+                            ->schema([
+                                ...ResponsiveSettings::schema(),
+                                ...Breakpoints::schema(),
+                                ...MobileSettings::schema(),
+                                ...TabletSettings::schema(),
+                                ...DesktopSettings::schema(),
+                            ]),
 
                         /*
                         |--------------------------------------------------------------------------
@@ -254,9 +266,13 @@ class PageForm
                         */
 
                         Tab::make('SEO')
-                            ->schema(
-                                SeoSettings::schema()
-                            ),
+                            ->schema([
+                                ...SeoSettings::schema(),
+                                ...MetaSettings::schema(),
+                                ...OpenGraphSettings::schema(),
+                                ...RobotsSettings::schema(),
+                                ...StructuredDataSettings::schema(),
+                            ]),
 
                         /*
                         |--------------------------------------------------------------------------

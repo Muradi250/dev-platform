@@ -18,7 +18,6 @@ class PublicPageController extends Controller
         $page = Page::query()
             ->where('slug', 'home')
             ->where('locale', $locale)
-            ->where('status', 'published')
             ->with([
                 'blocks' => function ($query) {
                     $query
@@ -34,6 +33,7 @@ class PublicPageController extends Controller
 
         return $this->renderPage($page);
     }
+
 
     /**
      * Display a dynamic public page.
@@ -51,7 +51,6 @@ class PublicPageController extends Controller
         $page = Page::query()
             ->where('slug', $slug)
             ->where('locale', $locale)
-            ->where('status', 'published')
             ->with([
                 'blocks' => function ($query) {
                     $query
@@ -68,17 +67,64 @@ class PublicPageController extends Controller
         return $this->renderPage($page);
     }
 
+
+    /**
+     * Find a translation of the current Page.
+     *
+     * This method is used by the public language switcher.
+     */
+    public function translation(Page $page, string $locale): ?Page
+    {
+        if ($page->locale === $locale) {
+            return $page;
+        }
+
+        return $page->translation($locale);
+    }
+
+
     /**
      * Render every public page through the Page Builder.
      */
     protected function renderPage(Page $page)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | UNPUBLISHED PAGE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($page->status === 'draft') {
+            return view('public.status.unpublished', [
+                'page' => $page,
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ONLY PUBLISHED PAGES ARE RENDERED PUBLICLY
+        |--------------------------------------------------------------------------
+        */
+
+        if ($page->status !== 'published') {
+            abort(404);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PUBLIC STATISTICS
+        |--------------------------------------------------------------------------
+        */
+
         $stats = [
             'users' => User::count(),
             'organizations' => 0,
             'modules' => 18,
             'status' => 'Active',
         ];
+
 
         /*
         |--------------------------------------------------------------------------

@@ -37,6 +37,8 @@ class Page extends Model
 
         'settings',
 
+        'translation_group',
+
     ];
 
 
@@ -86,5 +88,46 @@ class Page extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Translations
+    |--------------------------------------------------------------------------
+    |
+    | تمام Pageهایی که متعلق به همین Translation Group هستند.
+    |
+    */
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(
+            Page::class,
+            'translation_group',
+            'translation_group'
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Translation Helper
+    |--------------------------------------------------------------------------
+    |
+    | یک Translation مشخص را بر اساس Locale پیدا می‌کند.
+    |
+    */
+
+    public function translation(string $locale): ?Page
+    {
+        if (empty($this->translation_group)) {
+            return null;
+        }
+
+        return $this->translations()
+            ->where('locale', $locale)
+            ->where('id', '!=', $this->id)
+            ->first();
     }
 }

@@ -6,7 +6,9 @@
 >
 <head>
 
-{{-- BASIC META --}}
+{{-- ==========================================================================
+01. BASIC DOCUMENT META
+========================================================================== --}}
 
 <meta charset="UTF-8">
 
@@ -20,600 +22,847 @@
     content="{{ csrf_token() }}"
 >
 
-
-{{-- PAGE BUILDER SETTINGS --}}
+{{-- ==========================================================================
+02. PAGE BUILDER SETTINGS
+========================================================================== --}}
 
 @php
 
-    $rawPageSettings = $settings ?? null;
+$rawPageSettings = $settings ?? null;
 
-    if (
-        ! is_array($rawPageSettings) &&
-        isset($page) &&
-        is_object($page)
-    ) {
-        $rawPageSettings = $page->settings ?? null;
-    }
+if (
+    ! is_array($rawPageSettings) &&
+    isset($page) &&
+    is_object($page)
+) {
+    $rawPageSettings = $page->settings ?? null;
+}
 
-    if (is_string($rawPageSettings)) {
+if (is_string($rawPageSettings)) {
 
-        $decodedSettings = json_decode(
-            $rawPageSettings,
-            true
-        );
+    $decodedSettings = json_decode(
+        $rawPageSettings,
+        true
+    );
 
-        $rawPageSettings = is_array($decodedSettings)
-            ? $decodedSettings
-            : [];
-
-    }
-
-    $pageSettings = is_array($rawPageSettings)
-        ? $rawPageSettings
+    $rawPageSettings = is_array($decodedSettings)
+        ? $decodedSettings
         : [];
 
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | GENERAL
-    |--------------------------------------------------------------------------
-    */
+$pageSettings = is_array($rawPageSettings)
+    ? $rawPageSettings
+    : [];
 
-    $pageTitle = data_get(
+
+/*
+|--------------------------------------------------------------------------
+| 03. GENERAL PAGE SETTINGS
+|--------------------------------------------------------------------------
+| ????? ????? ??????? ? Favicon
+|--------------------------------------------------------------------------
+*/
+
+$pageTitle = data_get(
+    $pageSettings,
+    'settings.general.title',
+    data_get(
         $pageSettings,
-        'settings.general.title',
+        'general.title',
+        $page->title ?? 'Dev-Platform'
+    )
+);
+
+$author = data_get(
+    $pageSettings,
+    'settings.general.author',
+    data_get(
+        $pageSettings,
+        'general.author',
+        'Dev-Platform'
+    )
+);
+
+$favicon = data_get(
+    $pageSettings,
+    'settings.general.favicon',
+    data_get(
+        $pageSettings,
+        'general.favicon',
+        null
+    )
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| 04. THEME META CONTEXT
+|--------------------------------------------------------------------------
+| Theme rendering ???? ????:
+|
+| public.partials.theme
+|
+| ?????? ??????.
+|
+| ??? ??? ??? ?????? ???? ???? Layout ????? ?? ????? ??????.
+|--------------------------------------------------------------------------
+*/
+
+$themeMode = data_get(
+    $pageSettings,
+    'settings.theme.mode',
+    data_get(
+        $pageSettings,
+        'theme.mode',
+        'light'
+    )
+);
+
+$primaryColor = data_get(
+    $pageSettings,
+    'settings.theme.colors.primary',
+    data_get(
+        $pageSettings,
+        'theme.colors.primary',
         data_get(
             $pageSettings,
-            'general.title',
-            $page->title ?? 'Dev-Platform'
+            'theme.primary_color',
+            '#4f46e5'
         )
+    )
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| 05. SEO SETTINGS
+|--------------------------------------------------------------------------
+| Primary SEO values
+|--------------------------------------------------------------------------
+*/
+
+$seoTitle = data_get(
+    $pageSettings,
+    'seo_title',
+    $page->seo_title ?? null
+);
+
+$seoTitle = filled($seoTitle)
+    ? $seoTitle
+    : ($page->title ?? $pageTitle ?? 'Dev-Platform');
+
+
+$metaDescription = data_get(
+    $pageSettings,
+    'seo_description',
+    $page->seo_description ?? null
+);
+
+$metaDescription = filled($metaDescription)
+    ? $metaDescription
+    : 'Dev-Platform Digital Organization Management Platform';
+
+
+$metaKeywords = data_get(
+    $pageSettings,
+    'seo_keywords',
+    null
+);
+
+$metaKeywords = filled($metaKeywords)
+    ? $metaKeywords
+    : 'Laravel, ERP, HR, Finance, Accounting, Digital Platform';
+
+
+$canonicalUrl = data_get(
+    $pageSettings,
+    'seo_canonical_url',
+    null
+);
+
+$canonicalUrl = filled($canonicalUrl)
+    ? $canonicalUrl
+    : url()->current();
+
+
+/*
+|--------------------------------------------------------------------------
+| 06. META SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+$metaAuthor = data_get(
+    $pageSettings,
+    'meta_author',
+    null
+);
+
+$metaAuthor = filled($metaAuthor)
+    ? $metaAuthor
+    : $author;
+
+
+$metaApplicationName = data_get(
+    $pageSettings,
+    'meta_application_name',
+    'Dev-Platform'
+);
+
+
+$metaThemeColor = data_get(
+    $pageSettings,
+    'meta_theme_color',
+    null
+);
+
+$metaThemeColor = filled($metaThemeColor)
+    ? $metaThemeColor
+    : $primaryColor;
+
+
+$metaReferrer = data_get(
+    $pageSettings,
+    'meta_referrer',
+    'strict-origin-when-cross-origin'
+);
+
+
+$customMeta = data_get(
+    $pageSettings,
+    'meta_custom',
+    []
+);
+
+$customMeta = is_array($customMeta)
+    ? $customMeta
+    : [];
+
+
+/*
+|--------------------------------------------------------------------------
+| 07. OPEN GRAPH SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+$ogTitle = data_get(
+    $pageSettings,
+    'og_title',
+    null
+);
+
+$ogTitle = filled($ogTitle)
+    ? $ogTitle
+    : $seoTitle;
+
+
+$ogDescription = data_get(
+    $pageSettings,
+    'og_description',
+    null
+);
+
+$ogDescription = filled($ogDescription)
+    ? $ogDescription
+    : $metaDescription;
+
+
+$ogImage = data_get(
+    $pageSettings,
+    'og_image',
+    null
+);
+
+
+$ogUrl = data_get(
+    $pageSettings,
+    'og_url',
+    null
+);
+
+$ogUrl = filled($ogUrl)
+    ? $ogUrl
+    : $canonicalUrl;
+
+
+$ogType = data_get(
+    $pageSettings,
+    'og_type',
+    'website'
+);
+
+
+$ogSiteName = data_get(
+    $pageSettings,
+    'og_site_name',
+    'Dev-Platform'
+);
+
+
+$ogLocale = data_get(
+    $pageSettings,
+    'og_locale',
+    null
+);
+
+$ogLocale = filled($ogLocale)
+    ? $ogLocale
+    : match (app()->getLocale()) {
+        'fa' => 'fa_IR',
+        'ps' => 'ps_AF',
+        default => 'en_US',
+    };
+
+
+/*
+|--------------------------------------------------------------------------
+| 08. ROBOTS SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+$robotsIndex = data_get(
+    $pageSettings,
+    'robots_index',
+    'index'
+);
+
+$robotsFollow = data_get(
+    $pageSettings,
+    'robots_follow',
+    'follow'
+);
+
+$robotsArchive = (bool) data_get(
+    $pageSettings,
+    'robots_archive',
+    true
+);
+
+$robotsSnippet = (bool) data_get(
+    $pageSettings,
+    'robots_snippet',
+    true
+);
+
+$robotsImageIndex = (bool) data_get(
+    $pageSettings,
+    'robots_image_index',
+    true
+);
+
+
+$robotsDirectives = [];
+
+$robotsDirectives[] = $robotsIndex === 'noindex'
+    ? 'noindex'
+    : 'index';
+
+$robotsDirectives[] = $robotsFollow === 'nofollow'
+    ? 'nofollow'
+    : 'follow';
+
+if (! $robotsArchive) {
+    $robotsDirectives[] = 'noarchive';
+}
+
+if (! $robotsSnippet) {
+    $robotsDirectives[] = 'nosnippet';
+}
+
+if (! $robotsImageIndex) {
+    $robotsDirectives[] = 'noimageindex';
+}
+
+$robots = implode(
+    ', ',
+    $robotsDirectives
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| 09. STRUCTURED DATA SETTINGS
+|--------------------------------------------------------------------------
+*/
+
+$schemaType = data_get(
+    $pageSettings,
+    'schema_type',
+    'WebPage'
+);
+
+$schemaDescription = data_get(
+    $pageSettings,
+    'schema_description',
+    null
+);
+
+$schemaDescription = filled($schemaDescription)
+    ? $schemaDescription
+    : $metaDescription;
+
+
+$schemaProperties = data_get(
+    $pageSettings,
+    'schema_properties',
+    []
+);
+
+$schemaProperties = is_array($schemaProperties)
+    ? $schemaProperties
+    : [];
+
+
+$schemaCustomJson = data_get(
+    $pageSettings,
+    'schema_custom_json',
+    null
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| 09.1 BUILD DEFAULT STRUCTURED DATA
+|--------------------------------------------------------------------------
+*/
+
+$structuredData = [
+    '@context' => 'https://schema.org',
+    '@type' => $schemaType,
+    'name' => $seoTitle,
+    'description' => $schemaDescription,
+    'url' => $canonicalUrl,
+];
+
+foreach ($schemaProperties as $property => $value) {
+
+    if (
+        filled($property) &&
+        filled($value)
+    ) {
+        $structuredData[$property] = $value;
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| 09.2 CUSTOM JSON-LD
+|--------------------------------------------------------------------------
+|
+| ??? JSON ????? ???? ??? ????? ?????? ?? ?? ???.
+|--------------------------------------------------------------------------
+*/
+
+$customStructuredData = null;
+
+if (filled($schemaCustomJson)) {
+
+    $decodedStructuredData = json_decode(
+        $schemaCustomJson,
+        true
     );
 
-    $author = data_get(
+    if (
+        json_last_error() === JSON_ERROR_NONE &&
+        is_array($decodedStructuredData)
+    ) {
+        $customStructuredData = $decodedStructuredData;
+    }
+
+}
+
+ /*
+| -------------------------------------------------------------------------- |
+| 10. RESPONSIVE SETTINGS                                                    |
+| -------------------------------------------------------------------------- |
+| Responsive settings for mobile, tablet, and desktop.                       |
+| -------------------------------------------------------------------------- |
+ */
+
+$mobileEnabled = (bool) data_get(
+$pageSettings,
+'settings.responsive.mobile',
+data_get(
+$pageSettings,
+'responsive.mobile',
+true
+)
+);
+
+$tabletEnabled = (bool) data_get(
+$pageSettings,
+'settings.responsive.tablet',
+data_get(
+$pageSettings,
+'responsive.tablet',
+true
+)
+);
+
+$desktopEnabled = (bool) data_get(
+$pageSettings,
+'settings.responsive.desktop',
+data_get(
+$pageSettings,
+'responsive.desktop',
+true
+)
+);
+
+ /*
+| -------------------------------------------------------------------------- |
+| 11. LAYOUT SETTINGS                                                        |
+| -------------------------------------------------------------------------- |
+| ???:                                                                       |
+|                                                                            |
+| Layout ??????? ???? ??:                                                    |
+|                                                                            |
+| public.partials.template-layout                                            |
+|                                                                            |
+| ????? ??????.                                                              |
+|                                                                            |
+| ??? Layout ????? ???? Container / Width / Padding /                        |
+| Spacing ????? ?? ?????? ???? ?? ????? ???????.                             |
+| -------------------------------------------------------------------------- |
+ */
+
+$containerEnabled = (bool) data_get(
+$pageSettings,
+'settings.layout.container.enabled',
+data_get(
+$pageSettings,
+'layout.container.enabled',
+true
+)
+);
+
+$containerWidth = data_get(
+$pageSettings,
+'settings.layout.width.max_width',
+data_get(
+$pageSettings,
+'layout.width.max_width',
+data_get(
+$pageSettings,
+'layout.container.max_width',
+'7xl'
+)
+)
+);
+
+$containerPadding = data_get(
+$pageSettings,
+'settings.layout.container.padding',
+data_get(
+$pageSettings,
+'layout.container.padding',
+'6'
+)
+);
+
+$layoutSpacing = data_get(
+$pageSettings,
+'settings.layout.spacing.content',
+data_get(
+$pageSettings,
+'layout.spacing.content',
+'6'
+)
+);
+
+/*
+|--------------------------------------------------------------------------
+| 12. HEADER SETTINGS
+|--------------------------------------------------------------------------
+| ???? ???? Header
+| Sticky ???? Header
+|--------------------------------------------------------------------------
+*/
+
+$headerEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.header.visibility.enabled',
+    data_get(
         $pageSettings,
-        'settings.general.author',
+        'header.visibility.enabled',
         data_get(
             $pageSettings,
-            'general.author',
-            'Dev-Platform'
-        )
-    );
-
-    $favicon = data_get(
-        $pageSettings,
-        'settings.general.favicon',
-        data_get(
-            $pageSettings,
-            'general.favicon',
-            null
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SEO
-    |--------------------------------------------------------------------------
-    */
-
-    $metaDescription = data_get(
-        $pageSettings,
-        'settings.seo.meta.description',
-        data_get(
-            $pageSettings,
-            'seo.meta.description',
-            data_get(
-                $pageSettings,
-                'seo.description',
-                'Dev-Platform Digital Organization Management Platform'
-            )
-        )
-    );
-
-    $metaKeywords = data_get(
-        $pageSettings,
-        'settings.seo.meta.keywords',
-        data_get(
-            $pageSettings,
-            'seo.meta.keywords',
-            data_get(
-                $pageSettings,
-                'seo.keywords',
-                'Laravel, ERP, HR, Finance, Accounting, Digital Platform'
-            )
-        )
-    );
-
-    $robots = data_get(
-        $pageSettings,
-        'settings.seo.robots.value',
-        data_get(
-            $pageSettings,
-            'seo.robots.value',
-            data_get(
-                $pageSettings,
-                'seo.robots',
-                'index, follow'
-            )
-        )
-    );
-
-    $canonicalUrl = data_get(
-        $pageSettings,
-        'settings.seo.meta.canonical_url',
-        data_get(
-            $pageSettings,
-            'seo.meta.canonical_url',
-            data_get(
-                $pageSettings,
-                'seo.canonical_url',
-                url()->current()
-            )
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | OPEN GRAPH
-    |--------------------------------------------------------------------------
-    */
-
-    $ogTitle = data_get(
-        $pageSettings,
-        'settings.seo.open_graph.title',
-        data_get(
-            $pageSettings,
-            'seo.open_graph.title',
-            $page->title ?? $pageTitle
-        )
-    );
-
-    $ogDescription = data_get(
-        $pageSettings,
-        'settings.seo.open_graph.description',
-        data_get(
-            $pageSettings,
-            'seo.open_graph.description',
-            $metaDescription
-        )
-    );
-
-    $ogImage = data_get(
-        $pageSettings,
-        'settings.seo.open_graph.image',
-        data_get(
-            $pageSettings,
-            'seo.open_graph.image',
-            null
-        )
-    );
-
-    $ogType = data_get(
-        $pageSettings,
-        'settings.seo.open_graph.type',
-        data_get(
-            $pageSettings,
-            'seo.open_graph.type',
-            'website'
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | THEME META CONTEXT
-    |--------------------------------------------------------------------------
-    |
-    | Theme rendering itself is handled by:
-    |
-    | public.partials.theme
-    |
-    | Only the values required by this global layout remain here.
-    |
-    */
-
-    $themeMode = data_get(
-        $pageSettings,
-        'settings.theme.mode',
-        data_get(
-            $pageSettings,
-            'theme.mode',
-            'light'
-        )
-    );
-
-    $primaryColor = data_get(
-        $pageSettings,
-        'settings.theme.colors.primary',
-        data_get(
-            $pageSettings,
-            'theme.colors.primary',
-            data_get(
-                $pageSettings,
-                'theme.primary_color',
-                '#4f46e5'
-            )
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESPONSIVE
-    |--------------------------------------------------------------------------
-    */
-
-    $responsiveEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.responsive.enabled',
-        data_get(
-            $pageSettings,
-            'responsive.enabled',
+            'header.enabled',
             true
         )
-    );
+    )
+);
 
-    $mobileEnabled = (bool) data_get(
+$headerSticky = (bool) data_get(
+    $pageSettings,
+    'settings.header.behavior.sticky',
+    data_get(
         $pageSettings,
-        'settings.responsive.mobile.enabled',
+        'header.behavior.sticky',
         data_get(
             $pageSettings,
-            'responsive.mobile.enabled',
-            true
-        )
-    );
-
-    $tabletEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.responsive.tablet.enabled',
-        data_get(
-            $pageSettings,
-            'responsive.tablet.enabled',
-            true
-        )
-    );
-
-    $desktopEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.responsive.desktop.enabled',
-        data_get(
-            $pageSettings,
-            'responsive.desktop.enabled',
-            true
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | LAYOUT
-    |--------------------------------------------------------------------------
-    |
-    | مهم:
-    |
-    | Layout اختصاصی صفحه در:
-    |
-    | public.partials.template-layout
-    |
-    | کنترل می‌شود.
-    |
-    | این Layout عمومی دیگر container / width / padding / spacing
-    | مربوط به محتوای صفحه را اعمال نمی‌کند.
-    |
-    */
-
-    $containerEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.layout.container.enabled',
-        data_get(
-            $pageSettings,
-            'layout.container.enabled',
-            true
-        )
-    );
-
-    $containerWidth = data_get(
-        $pageSettings,
-        'settings.layout.width.max_width',
-        data_get(
-            $pageSettings,
-            'layout.width.max_width',
-            data_get(
-                $pageSettings,
-                'layout.container.max_width',
-                '7xl'
-            )
-        )
-    );
-
-    $containerPadding = data_get(
-        $pageSettings,
-        'settings.layout.container.padding',
-        data_get(
-            $pageSettings,
-            'layout.container.padding',
-            '6'
-        )
-    );
-
-    $layoutSpacing = data_get(
-        $pageSettings,
-        'settings.layout.spacing.content',
-        data_get(
-            $pageSettings,
-            'layout.spacing.content',
-            '6'
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | HEADER
-    |--------------------------------------------------------------------------
-    */
-
-    $headerEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.header.visibility.enabled',
-        data_get(
-            $pageSettings,
-            'header.visibility.enabled',
-            data_get(
-                $pageSettings,
-                'header.enabled',
-                true
-            )
-        )
-    );
-
-    $headerSticky = (bool) data_get(
-        $pageSettings,
-        'settings.header.behavior.sticky',
-        data_get(
-            $pageSettings,
-            'header.behavior.sticky',
-            data_get(
-                $pageSettings,
-                'header.sticky',
-                false
-            )
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NAVIGATION
-    |--------------------------------------------------------------------------
-    */
-
-    $announcementEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.navigation.announcement.enabled',
-        data_get(
-            $pageSettings,
-            'navigation.announcement.enabled',
+            'header.sticky',
             false
         )
-    );
+    )
+);
 
-    $announcementText = data_get(
+
+/*
+|--------------------------------------------------------------------------
+| 13. NAVIGATION SETTINGS
+|--------------------------------------------------------------------------
+| Announcement
+| Secondary Navigation
+| Breadcrumb
+|--------------------------------------------------------------------------
+*/
+
+$announcementEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.navigation.announcement.enabled',
+    data_get(
         $pageSettings,
-        'settings.navigation.announcement.text',
-        data_get(
-            $pageSettings,
-            'navigation.announcement.text',
-            'Build smarter. Manage everything in one place.'
-        )
-    );
+        'navigation.announcement.enabled',
+        false
+    )
+);
 
-    $secondaryNavigationEnabled = (bool) data_get(
+$announcementText = data_get(
+    $pageSettings,
+    'settings.navigation.announcement.text',
+    data_get(
         $pageSettings,
-        'settings.navigation.secondary.enabled',
-        data_get(
-            $pageSettings,
-            'navigation.secondary.enabled',
-            false
-        )
-    );
+        'navigation.announcement.text',
+        'Build smarter. Manage everything in one place.'
+    )
+);
 
-    $secondaryNavigationTitle = data_get(
+$secondaryNavigationEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.navigation.secondary.enabled',
+    data_get(
         $pageSettings,
-        'settings.navigation.secondary.title',
-        data_get(
-            $pageSettings,
-            'navigation.secondary.title',
-            ''
-        )
-    );
+        'navigation.secondary.enabled',
+        false
+    )
+);
 
-    $breadcrumbEnabled = (bool) data_get(
+$secondaryNavigationTitle = data_get(
+    $pageSettings,
+    'settings.navigation.secondary.title',
+    data_get(
         $pageSettings,
-        'settings.navigation.breadcrumb.enabled',
-        data_get(
-            $pageSettings,
-            'navigation.breadcrumb.enabled',
-            true
-        )
-    );
+        'navigation.secondary.title',
+        ''
+    )
+);
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | INFORMATION BAR
-    |--------------------------------------------------------------------------
-    */
-
-    $informationBarEnabled = (bool) data_get(
+$breadcrumbEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.navigation.breadcrumb.enabled',
+    data_get(
         $pageSettings,
-        'settings.navigation.information_bar.enabled',
-        data_get(
-            $pageSettings,
-            'navigation.information_bar.enabled',
-            false
-        )
-    );
-
-    $informationBarText = data_get(
-        $pageSettings,
-        'settings.navigation.information_bar.text',
-        data_get(
-            $pageSettings,
-            'navigation.information_bar.text',
-            ''
-        )
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SIDEBAR
-    |--------------------------------------------------------------------------
-    |
-    | مهم:
-    |
-    | این Layout هیچ فضای Layout برای Sidebar رزرو نمی‌کند.
-    |
-    | Sidebar به صورت مستقل توسط:
-    |
-    | public.partials.sidebar
-    |
-    | رندر می‌شود و خودش مسئول Drawer در تمام دستگاه‌ها است.
-    |
-    */
-
-    $sidebarEnabled = (bool) data_get(
-        $pageSettings,
-        'settings.sidebar.enabled',
-        data_get(
-            $pageSettings,
-            'sidebar.enabled',
-            false
-        )
-    );
-
-    $sidebarPosition = data_get(
-        $pageSettings,
-        'settings.sidebar.position',
-        data_get(
-            $pageSettings,
-            'sidebar.position',
-            'right'
-        )
-    );
-
-    $sidebarPosition = in_array(
-        $sidebarPosition,
-        ['left', 'right'],
+        'navigation.breadcrumb.enabled',
         true
     )
-        ? $sidebarPosition
-        : 'right';
+);
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | FOOTER
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| 14. INFORMATION BAR SETTINGS
+|--------------------------------------------------------------------------
+| ???? ???????? ?????
+|--------------------------------------------------------------------------
+*/
 
-    $footerEnabled = (bool) data_get(
+$informationBarEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.navigation.information_bar.enabled',
+    data_get(
         $pageSettings,
-        'settings.footer.enabled',
-        data_get(
-            $pageSettings,
-            'footer.enabled',
-            true
-        )
-    );
+        'navigation.information_bar.enabled',
+        false
+    )
+);
 
-    $footerDesktop = (bool) data_get(
+$informationBarText = data_get(
+    $pageSettings,
+    'settings.navigation.information_bar.text',
+    data_get(
         $pageSettings,
-        'settings.footer.visibility.desktop',
-        data_get(
-            $pageSettings,
-            'footer.visibility.desktop',
-            true
-        )
-    );
+        'navigation.information_bar.text',
+        ''
+    )
+);
 
-    $footerTablet = (bool) data_get(
+
+/*
+|--------------------------------------------------------------------------
+| 15. SIDEBAR SETTINGS
+|--------------------------------------------------------------------------
+| ??? Layout ??? ???? ????? ???? Sidebar ???? ???????.
+|
+| Sidebar ?? ???? ????? ????:
+|
+| public.partials.sidebar
+|
+| ???? ?????? ? ???? ????? Drawer ?? ?????????? ????? ???.
+|--------------------------------------------------------------------------
+*/
+
+$sidebarEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.sidebar.enabled',
+    data_get(
         $pageSettings,
-        'settings.footer.visibility.tablet',
-        data_get(
-            $pageSettings,
-            'footer.visibility.tablet',
-            true
-        )
-    );
+        'sidebar.enabled',
+        false
+    )
+);
 
-    $footerMobile = (bool) data_get(
+$sidebarPosition = data_get(
+    $pageSettings,
+    'settings.sidebar.position',
+    data_get(
         $pageSettings,
-        'settings.footer.visibility.mobile',
-        data_get(
-            $pageSettings,
-            'footer.visibility.mobile',
-            true
-        )
-    );
+        'sidebar.position',
+        'right'
+    )
+);
 
-    $footerHomepage = (bool) data_get(
+$sidebarPosition = in_array(
+    $sidebarPosition,
+    ['left', 'right'],
+    true
+)
+    ? $sidebarPosition
+    : 'right';
+
+
+/*
+|--------------------------------------------------------------------------
+| 16. FOOTER SETTINGS
+|--------------------------------------------------------------------------
+| ???? ???? Footer
+|
+| Visibility:
+| Desktop
+| Tablet
+| Mobile
+|
+| Page Type:
+| Homepage
+| Inner Pages
+|--------------------------------------------------------------------------
+*/
+
+$footerEnabled = (bool) data_get(
+    $pageSettings,
+    'settings.footer.enabled',
+    data_get(
         $pageSettings,
-        'settings.footer.visibility.homepage',
-        data_get(
-            $pageSettings,
-            'footer.visibility.homepage',
-            true
-        )
-    );
+        'footer.enabled',
+        true
+    )
+);
 
-    $footerInnerPages = (bool) data_get(
+$footerDesktop = (bool) data_get(
+    $pageSettings,
+    'settings.footer.visibility.desktop',
+    data_get(
         $pageSettings,
-        'settings.footer.visibility.inner_pages',
-        data_get(
-            $pageSettings,
-            'footer.visibility.inner_pages',
-            true
-        )
-    );
+        'footer.visibility.desktop',
+        true
+    )
+);
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | ACCESS
-    |--------------------------------------------------------------------------
-    */
-
-    $pageVisible = (bool) data_get(
+$footerTablet = (bool) data_get(
+    $pageSettings,
+    'settings.footer.visibility.tablet',
+    data_get(
         $pageSettings,
-        'settings.access.visibility.enabled',
-        data_get(
-            $pageSettings,
-            'access.visibility.enabled',
-            true
-        )
-    );
+        'footer.visibility.tablet',
+        true
+    )
+);
+
+$footerMobile = (bool) data_get(
+    $pageSettings,
+    'settings.footer.visibility.mobile',
+    data_get(
+        $pageSettings,
+        'footer.visibility.mobile',
+        true
+    )
+);
+
+$footerHomepage = (bool) data_get(
+    $pageSettings,
+    'settings.footer.visibility.homepage',
+    data_get(
+        $pageSettings,
+        'footer.visibility.homepage',
+        true
+    )
+);
+
+$footerInnerPages = (bool) data_get(
+    $pageSettings,
+    'settings.footer.visibility.inner_pages',
+    data_get(
+        $pageSettings,
+        'footer.visibility.inner_pages',
+        true
+    )
+);
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | ROUTE CONTEXT
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| 17. ACCESS SETTINGS
+|--------------------------------------------------------------------------
+| ????? ???? ?????? ???? ????
+|--------------------------------------------------------------------------
+*/
 
-    $isHomepage = request()->routeIs('public.home');
+$pageVisible = (bool) data_get(
+    $pageSettings,
+    'settings.access.visibility.enabled',
+    data_get(
+        $pageSettings,
+        'access.visibility.enabled',
+        true
+    )
+);
 
-    $isInnerPage = request()->routeIs('public.page');
+
+/*
+|--------------------------------------------------------------------------
+| 18. ROUTE CONTEXT
+|--------------------------------------------------------------------------
+| ????? Homepage ? Inner Page
+|--------------------------------------------------------------------------
+*/
+
+$isHomepage = request()->routeIs('public.home');
+
+$isInnerPage = request()->routeIs('public.page');
 
 @endphp
 
 
-{{-- SEO --}}
+{{-- ==========================================================================
+19. SEO OUTPUT
+|--------------------------------------------------------------------------
+| ????? ????? Meta Tags ????? ?? SEO
+========================================================================== --}}
 
 <title>
-    @yield('title', $pageTitle)
+    @yield('title', $seoTitle)
 </title>
 
 <meta
@@ -628,7 +877,12 @@
 
 <meta
     name="author"
-    content="{{ $author }}"
+    content="{{ $metaAuthor }}"
+>
+
+<meta
+    name="application-name"
+    content="{{ $metaApplicationName }}"
 >
 
 <meta
@@ -636,8 +890,33 @@
     content="@yield('robots', $robots)"
 >
 
+<meta
+    name="referrer"
+    content="{{ $metaReferrer }}"
+>
 
-{{-- OPEN GRAPH --}}
+
+{{-- ==========================================================================
+20. CUSTOM META TAGS
+========================================================================== --}}
+
+@foreach ($customMeta as $metaName => $metaContent)
+
+    @if (filled($metaName) && filled($metaContent))
+
+        <meta
+            name="{{ $metaName }}"
+            content="{{ $metaContent }}"
+        >
+
+    @endif
+
+@endforeach
+
+
+{{-- ==========================================================================
+21. OPEN GRAPH OUTPUT
+========================================================================== --}}
 
 <meta
     property="og:title"
@@ -656,7 +935,17 @@
 
 <meta
     property="og:url"
-    content="{{ $canonicalUrl }}"
+    content="{{ $ogUrl }}"
+>
+
+<meta
+    property="og:site_name"
+    content="{{ $ogSiteName }}"
+>
+
+<meta
+    property="og:locale"
+    content="{{ $ogLocale }}"
 >
 
 @if (filled($ogImage))
@@ -669,7 +958,9 @@
 @endif
 
 
-{{-- CANONICAL --}}
+{{-- ==========================================================================
+22. CANONICAL URL
+========================================================================== --}}
 
 @if (filled($canonicalUrl))
 
@@ -681,11 +972,16 @@
 @endif
 
 
-{{-- THEME META --}}
+{{-- ==========================================================================
+23. THEME META
+|--------------------------------------------------------------------------
+| Theme Color
+| Color Scheme
+========================================================================== --}}
 
 <meta
     name="theme-color"
-    content="{{ $primaryColor }}"
+    content="{{ $metaThemeColor }}"
 >
 
 <meta
@@ -694,7 +990,9 @@
 >
 
 
-{{-- FAVICON --}}
+{{-- ==========================================================================
+24. FAVICON
+========================================================================== --}}
 
 @if (filled($favicon))
 
@@ -706,7 +1004,28 @@
 @endif
 
 
-{{-- FONT AWESOME --}}
+{{-- ==========================================================================
+25. STRUCTURED DATA
+|--------------------------------------------------------------------------
+| JSON-LD
+|--------------------------------------------------------------------------
+| ??? Custom JSON-LD ????? ????? ???? ??????? ??????.
+| ?? ??? ??? ???? Structured Data ????????? ???? ??????? ??????? ??????.
+========================================================================== --}}
+
+<script type="application/ld+json">
+@json(
+    $customStructuredData ?? $structuredData,
+    JSON_UNESCAPED_SLASHES |
+    JSON_UNESCAPED_UNICODE |
+    JSON_PRETTY_PRINT
+)
+</script>
+
+
+{{-- ==========================================================================
+26. FONT AWESOME
+========================================================================== --}}
 
 <link
     rel="stylesheet"
@@ -717,7 +1036,9 @@
 >
 
 
-{{-- VITE --}}
+{{-- ==========================================================================
+27. VITE ASSETS
+========================================================================== --}}
 
 @vite([
     'resources/css/app.css',
@@ -725,7 +1046,11 @@
 ])
 
 
-{{-- PUBLIC THEME SYSTEM --}}
+{{-- ==========================================================================
+28. PUBLIC THEME SYSTEM
+|--------------------------------------------------------------------------
+| ????? ???? Theme
+========================================================================== --}}
 
 @include(
     'public.partials.theme',
@@ -735,67 +1060,69 @@
 )
 
 
-{{-- GLOBAL LAYOUT STYLES --}}
+{{-- ==========================================================================
+29. GLOBAL LAYOUT STYLES
+|--------------------------------------------------------------------------
+| CSS ????? Layout
+========================================================================== --}}
 
 <style>
 
-    /*
-    |--------------------------------------------------------------------------
-    | GLOBAL RESPONSIVE CONTROL
-    |--------------------------------------------------------------------------
-    */
 
-    @if (! $responsiveEnabled)
+/*
+|--------------------------------------------------------------------------
+| 29.1 GLOBAL RESPONSIVE CONTROL
+|--------------------------------------------------------------------------
+| ????? ????? ???? ?? ???? ??????? Responsive
+|
+| Mobile  : 0 - 767px
+| Tablet  : 768 - 1023px
+| Desktop : 1024px+
+|--------------------------------------------------------------------------
+*/
+
+@if (! $mobileEnabled)
+
+    @media (max-width: 767px) {
 
         body {
-            min-width: 1024px;
+            display: none;
         }
 
-    @endif
+    }
+
+@endif
 
 
-    @if (! $mobileEnabled)
+@if (! $tabletEnabled)
 
-        @media (max-width: 767px) {
+    @media (min-width: 768px) and (max-width: 1023px) {
 
-            body {
-                display: none;
-            }
-
+        body {
+            display: none;
         }
 
-    @endif
+    }
+
+@endif
 
 
-    @if (! $tabletEnabled)
+@if (! $desktopEnabled)
 
-        @media (min-width: 768px) and (max-width: 1023px) {
+    @media (min-width: 1024px) {
 
-            body {
-                display: none;
-            }
-
+        body {
+            display: none;
         }
 
-    @endif
+    }
 
-
-    @if (! $desktopEnabled)
-
-        @media (min-width: 1024px) {
-
-            body {
-                display: none;
-            }
-
-        }
-
-    @endif
+@endif
 
 
     /*
     |--------------------------------------------------------------------------
-    | HEADER STICKY
+    | 29.2 HEADER STICKY
     |--------------------------------------------------------------------------
     */
 
@@ -814,17 +1141,22 @@
 
     /*
     |--------------------------------------------------------------------------
-    | SIDEBAR
+    | 29.3 SIDEBAR
     |--------------------------------------------------------------------------
     |
-    | هیچ Sidebar Layout Host در این فایل وجود ندارد.
+    | ??? Sidebar Layout Host ?? ??? ???? ???? ?????.
     |
-    | Sidebar به صورت Drawer مستقل داخل DOM قرار می‌گیرد.
+    | Sidebar ?? ???? Drawer ????? ???? DOM ???? ???????.
     |
+    |--------------------------------------------------------------------------
     */
 
 </style>
 
+
+{{-- ==========================================================================
+30. STACKED STYLES
+========================================================================== --}}
 
 @stack('styles')
 
@@ -838,6 +1170,12 @@
     "
 >
 
+
+{{-- ==========================================================================
+31. PAGE ACCESS CONTROL
+|--------------------------------------------------------------------------
+| ??? ???? ???? ?????? ?????? ???? Page unavailable ????? ???? ??????.
+========================================================================== --}}
 
 @if (! $pageVisible)
 
@@ -883,10 +1221,15 @@
 
     </main>
 
+
 @else
 
 
-{{-- GLOBAL BACKGROUND --}}
+{{-- ==========================================================================
+32. GLOBAL BACKGROUND
+|--------------------------------------------------------------------------
+| Background Decoration ????? ????
+========================================================================== --}}
 
 <div
     class="
@@ -899,58 +1242,60 @@
     aria-hidden="true"
 >
 
+    @if ($themeMode !== 'dark')
 
-@if ($themeMode !== 'dark')
-
-    <div
-        class="
-            absolute
-            left-1/2
-            top-0
-            h-[500px]
-            w-[900px]
-            -translate-x-1/2
-            rounded-full
-            bg-indigo-200/30
-            blur-3xl
-        "
-    ></div>
-
-
-    <div
-        class="
-            absolute
-            -right-40
-            top-[35%]
-            h-[420px]
-            w-[420px]
-            rounded-full
-            bg-purple-200/20
-            blur-3xl
-        "
-    ></div>
+        <div
+            class="
+                absolute
+                left-1/2
+                top-0
+                h-[500px]
+                w-[900px]
+                -translate-x-1/2
+                rounded-full
+                bg-indigo-200/30
+                blur-3xl
+            "
+        ></div>
 
 
-    <div
-        class="
-            absolute
-            -left-40
-            top-[65%]
-            h-[420px]
-            w-[420px]
-            rounded-full
-            bg-blue-200/20
-            blur-3xl
-        "
-    ></div>
+        <div
+            class="
+                absolute
+                -right-40
+                top-[35%]
+                h-[420px]
+                w-[420px]
+                rounded-full
+                bg-purple-200/20
+                blur-3xl
+            "
+        ></div>
 
-@endif
 
+        <div
+            class="
+                absolute
+                -left-40
+                top-[65%]
+                h-[420px]
+                w-[420px]
+                rounded-full
+                bg-blue-200/20
+                blur-3xl
+            "
+        ></div>
+
+    @endif
 
 </div>
 
 
-{{-- ANNOUNCEMENT --}}
+{{-- ==========================================================================
+33. ANNOUNCEMENT BAR
+|--------------------------------------------------------------------------
+| ???? ????? ????? Header
+========================================================================== --}}
 
 @if (
     $announcementEnabled &&
@@ -1026,7 +1371,11 @@
 @endif
 
 
-{{-- HEADER --}}
+{{-- ==========================================================================
+34. HEADER
+|--------------------------------------------------------------------------
+| Header ???? ????
+========================================================================== --}}
 
 @if ($headerEnabled)
 
@@ -1045,7 +1394,9 @@
         )
 
 
-        {{-- MAIN NAVIGATION BAR --}}
+        {{-- ------------------------------------------------------------------
+        34.1 MAIN NAVIGATION BAR
+        ------------------------------------------------------------------ --}}
 
         @include(
             'public.partials.navbar',
@@ -1060,7 +1411,9 @@
 @endif
 
 
-{{-- SECONDARY NAVIGATION --}}
+{{-- ==========================================================================
+35. SECONDARY NAVIGATION
+========================================================================== --}}
 
 @if (
     $secondaryNavigationEnabled &&
@@ -1098,7 +1451,9 @@
 @endif
 
 
-{{-- INFORMATION BAR --}}
+{{-- ==========================================================================
+36. INFORMATION BAR
+========================================================================== --}}
 
 @if (
     $informationBarEnabled &&
@@ -1136,7 +1491,9 @@
 @endif
 
 
-{{-- BREADCRUMB --}}
+{{-- ==========================================================================
+37. BREADCRUMB
+========================================================================== --}}
 
 @if (
     $breadcrumbEnabled &&
@@ -1172,7 +1529,11 @@
 @endif
 
 
-{{-- SIDEBAR DRAWER --}}
+{{-- ==========================================================================
+38. SIDEBAR DRAWER
+|--------------------------------------------------------------------------
+| Sidebar ????? ?? Layout ???? ????
+========================================================================== --}}
 
 @if ($sidebarEnabled)
 
@@ -1188,18 +1549,20 @@
 @endif
 
 
-{{-- MAIN CONTENT --}}
-{{--
-Page-specific Template & Layout is responsible for:
-- Container
-- Content Width
-- Horizontal Padding
-- Content Spacing
-- Layout Mode
-- Design Style
-
-This global layout only provides the main content host.
---}}
+{{-- ==========================================================================
+39. MAIN CONTENT
+|--------------------------------------------------------------------------
+| Page-specific Template & Layout ????? ????? ??? ???:
+|
+| - Container
+| - Content Width
+| - Horizontal Padding
+| - Content Spacing
+| - Layout Mode
+| - Design Style
+|
+| ??? Layout ????? ??? Main Content Host ?? ????? ??????.
+========================================================================== --}}
 
 <main
     id="main-content"
@@ -1216,7 +1579,11 @@ This global layout only provides the main content host.
 </main>
 
 
-{{-- PRE FOOTER --}}
+{{-- ==========================================================================
+40. PRE-FOOTER
+|--------------------------------------------------------------------------
+| ?????? ??????? ??? ?? Footer
+========================================================================== --}}
 
 @hasSection('pre-footer')
 
@@ -1229,7 +1596,15 @@ This global layout only provides the main content host.
 @endif
 
 
-{{-- FOOTER --}}
+{{-- ==========================================================================
+41. FOOTER
+|--------------------------------------------------------------------------
+| Footer ?? ???? ????? ??? ????? ??????:
+|
+| - Footer Enabled
+| - Homepage / Inner Page
+| - Desktop / Tablet / Mobile
+========================================================================== --}}
 
 @if ($footerEnabled)
 
@@ -1272,12 +1647,18 @@ This global layout only provides the main content host.
 @endif
 
 
-{{-- GLOBAL PAGE SCRIPTS --}}
+{{-- ==========================================================================
+42. GLOBAL PAGE SCRIPTS
+========================================================================== --}}
 
 @stack('scripts')
 
 
-{{-- OPTIONAL PAGE SCRIPTS --}}
+{{-- ==========================================================================
+43. OPTIONAL PAGE SCRIPTS
+|--------------------------------------------------------------------------
+| Script??? ??????? ?? Page
+========================================================================== --}}
 
 @hasSection('page-scripts')
 

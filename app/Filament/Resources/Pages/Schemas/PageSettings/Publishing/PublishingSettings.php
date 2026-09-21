@@ -10,18 +10,22 @@ class PublishingSettings
     public static function schema(): array
     {
         return [
+
             Section::make('Publishing Status')
                 ->schema([
+
                     Select::make('status')
                         ->label('Status')
                         ->options([
                             'draft' => 'Draft',
                             'published' => 'Published',
                         ])
-                        ->default('published')
+                        ->default('draft')
                         ->required()
                         ->native(false),
+
                 ]),
+
         ];
     }
 }

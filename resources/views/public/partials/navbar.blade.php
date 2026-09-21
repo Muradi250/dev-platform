@@ -299,40 +299,47 @@ return url($url);
 
 };
 
-$localeUrl = function ($targetLocale) {
+$localeUrl = function ($targetLocale) use ($page) {
+
+
 $targetLocale = in_array($targetLocale, ['en', 'fa', 'ps'], true)
-? $targetLocale
-: 'en';
+    ? $targetLocale
+    : 'en';
 
+if (! $page instanceof \App\Models\Page) {
 
-$currentPath = request()->path();
+    return url($targetLocale);
 
-$segments = array_values(
-    array_filter(
-        explode('/', trim($currentPath, '/')),
-        fn ($segment) => $segment !== ''
-    )
-);
-
-if (
-    isset($segments[0]) &&
-    in_array($segments[0], ['en', 'fa', 'ps'], true)
-) {
-    array_shift($segments);
 }
 
-$path = implode('/', $segments);
+if ($page->locale === $targetLocale) {
 
-return url(
-    $targetLocale . ($path !== '' ? '/' . $path : '')
-);
+    return url()->current();
+
+}
+
+$translation = $page->translation($targetLocale);
+
+if ($translation) {
+
+    return url(
+        $targetLocale . '/' . ltrim(
+            $translation->slug,
+            '/'
+        )
+    );
+
+}
+
+return url()->current();
 
 
 };
 
 $navLabel = function ($key, $fallback) {
-$translated = __($key);
 
+
+$translated = __($key);
 
 return $translated !== $key
     ? $translated
@@ -342,25 +349,41 @@ return $translated !== $key
 };
 
 $loginLabel = $navLabel(
+
+
 'navigation.login',
+
 $locale === 'fa'
-? 'ورود'
-: ($locale === 'ps' ? 'ننوتل' : 'Login')
+    ? 'ورود'
+    : ($locale === 'ps' ? 'ننوتل' : 'Login')
+
+
 );
 
 $demoLabel = $navLabel(
+
+
 'navigation.request_demo',
+
 $locale === 'fa'
-? 'درخواست دمو'
-: ($locale === 'ps' ? 'د ډیمو غوښتنه' : 'Request Demo')
+    ? 'درخواست دمو'
+    : ($locale === 'ps' ? 'د ډیمو غوښتنه' : 'Request Demo')
+
+
 );
 
 $homeLabel = $navLabel(
+
+
 'navigation.home',
+
 $locale === 'fa'
-? 'خانه'
-: ($locale === 'ps' ? 'کور' : 'Home')
+    ? 'خانه'
+    : ($locale === 'ps' ? 'کور' : 'Home')
+
+
 );
+
 
 $socialIconSvg = function ($platform) {
 return match ($platform) {
