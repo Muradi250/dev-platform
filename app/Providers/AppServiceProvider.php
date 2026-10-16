@@ -2,38 +2,46 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Event;
-
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
-use Illuminate\Auth\Events\Registered;
-
+use App\Contracts\TranslationProvider;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\LogSuccessfulLogout;
-use App\Listeners\LogUserCreated;
-
 use App\Models\User;
 use App\Observers\UserObserver;
+use App\Services\Translations\OpenAITranslationProvider;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(
+            TranslationProvider::class,
+            OpenAITranslationProvider::class
+        );
     }
 
     public function boot(): void
     {
         Schema::defaultStringLength(191);
 
-        // Auth events
-        Event::listen(Login::class, LogSuccessfulLogin::class);
-        Event::listen(Logout::class, LogSuccessfulLogout::class);
-        Event::listen(Registered::class, LogUserCreated::class);
+        // Authentication events
+        Event::listen(
+            Login::class,
+            LogSuccessfulLogin::class
+        );
 
-        // User Observer (CRUD tracking)
-        User::observe(UserObserver::class);
+        Event::listen(
+            Logout::class,
+            LogSuccessfulLogout::class
+        );
+
+        // User activity logging
+        User::observe(
+            UserObserver::class
+        );
     }
 }

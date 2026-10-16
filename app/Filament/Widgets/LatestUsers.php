@@ -9,7 +9,7 @@ use Filament\Widgets\TableWidget;
 
 class LatestUsers extends TableWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected int | string | array $columnSpan = 2;
 
     public function table(Table $table): Table
     {
@@ -20,51 +20,53 @@ class LatestUsers extends TableWidget
                     ->latest()
                     ->limit(5)
             )
-
             ->columns([
-
-                // 🆔 ID
+                // ID
                 Tables\Columns\TextColumn::make('id')
                     ->sortable()
                     ->label('#'),
 
-                // 👤 Name
+                // Name
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->icon('heroicon-o-user')
                     ->weight('bold'),
 
-                // 📧 Email
+                // Email
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
 
-                // 🎭 Roles (PRO FIX)
+                // Roles
                 Tables\Columns\TextColumn::make('roles')
-                    ->formatStateUsing(fn ($record) =>
-                        $record->roles->pluck('name')->join(', ')
+                    ->formatStateUsing(
+                        fn ($record) => $record->roles->pluck('name')->join(', ')
                     )
                     ->badge()
-                    ->color(fn ($record) =>
-                        $record->roles->contains('name', 'super-admin') ? 'danger' :
-                        ($record->roles->contains('name', 'admin') ? 'primary' : 'gray')
+                    ->color(
+                        fn ($record) => $record->roles->contains('name', 'super-admin')
+                            ? 'danger'
+                            : (
+                                $record->roles->contains('name', 'admin')
+                                    ? 'primary'
+                                    : 'gray'
+                            )
                     ),
 
-                // 🔐 STATUS (FIXED → using real system)
+                // Status
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn ($record) => $record->status_label)
                     ->color(fn ($record) => $record->status_color),
 
-                // 📅 Created
+                // Created
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Joined'),
             ])
-
             ->actions([])
             ->bulkActions([]);
     }

@@ -1,0 +1,115 @@
+
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Filament\Widgets\ActivityFeed;
+use App\Filament\Widgets\DashboardModuleCards;
+use App\Filament\Widgets\LatestUsers;
+use App\Filament\Widgets\RoleDistributionChart;
+use App\Filament\Widgets\SystemStats;
+use App\Filament\Widgets\UserGrowthChart;
+use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+
+class Dashboard extends BaseDashboard
+{
+    protected static ?string $title = 'Dashboard';
+
+    /**
+     * Responsive dashboard layout.
+     */
+    public function getColumns(): int | array
+    {
+        return [
+            'default' => 1,
+            'sm' => 2,
+            'md' => 2,
+            'xl' => 4,
+        ];
+    }
+
+    /**
+     * Keep all existing dashboard widgets.
+     */
+    public function getWidgets(): array
+    {
+        return [
+            SystemStats::class,
+            UserGrowthChart::class,
+            RoleDistributionChart::class,
+            DashboardModuleCards::class,
+            LatestUsers::class,
+            ActivityFeed::class,
+        ];
+    }
+
+    /**
+     * Organize existing widgets into four dashboard sections.
+     */
+    public function content(Schema $schema): Schema
+    {
+        $widgets = $this->getWidgets();
+
+        $components = $this->getWidgetsSchemaComponents($widgets);
+
+        $widgetsByClass = [];
+
+        foreach ($components as $component) {
+            $widgetsByClass[] = $component;
+        }
+
+        return $schema
+            ->components([
+                Section::make('آمار سیستم')
+                    ->icon('heroicon-o-chart-bar')
+                    ->divided()
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make([
+                            'default' => 1,
+                            'xl' => 2,
+                        ])->schema([
+                            $widgetsByClass[0] ?? null,
+                            $widgetsByClass[1] ?? null,
+                        ]),
+                    ]),
+
+                Section::make('نقش‌ها و دسترسی‌ها')
+                    ->icon('heroicon-o-shield-check')
+                    ->divided()
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make(1)->schema([
+                            $widgetsByClass[2] ?? null,
+                        ]),
+                    ]),
+
+                Section::make('ماژول‌های سیستم')
+                    ->icon('heroicon-o-squares-2x2')
+                    ->divided()
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make(1)->schema([
+                            $widgetsByClass[3] ?? null,
+                        ]),
+                    ]),
+
+                Section::make('کاربران و فعالیت‌ها')
+                    ->icon('heroicon-o-users')
+                    ->divided()
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make([
+                            'default' => 1,
+                            'xl' => 2,
+                        ])->schema([
+                            $widgetsByClass[4] ?? null,
+                            $widgetsByClass[5] ?? null,
+                        ]),
+                    ]),
+            ]);
+    }
+}

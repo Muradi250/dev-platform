@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // This migration is specific to MySQL.
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         $tables = [
             'users',
             'roles',
@@ -40,6 +45,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Do not run MySQL-specific SQL on other database drivers.
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         $tables = [
             'users',
             'roles',

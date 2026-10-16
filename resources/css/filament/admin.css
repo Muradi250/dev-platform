@@ -1,0 +1,904 @@
+/*
+|--------------------------------------------------------------------------
+| Dev-Platform Admin Panel
+|--------------------------------------------------------------------------
+| Sidebar group icons
+|--------------------------------------------------------------------------
+*/
+
+.fi-sidebar-group[data-group-label="Organization"] > .fi-sidebar-group-btn::before {
+    content: "";
+
+    display: inline-block;
+
+    width: 1.25rem;
+    height: 1.25rem;
+
+    margin-inline-end: 0.625rem;
+
+    flex-shrink: 0;
+
+    background-color: currentColor;
+
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V6l7-3 7 3v15'/%3E%3Cpath d='M8 9h1'/%3E%3Cpath d='M8 12h1'/%3E%3Cpath d='M8 15h1'/%3E%3Cpath d='M15 9h1'/%3E%3Cpath d='M15 12h1'/%3E%3Cpath d='M15 15h1'/%3E%3Cpath d='M10 21v-3h4v3'/%3E%3C/svg%3E") center / contain no-repeat;
+
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V6l7-3 7 3v15'/%3E%3Cpath d='M8 9h1'/%3E%3Cpath d='M8 12h1'/%3E%3Cpath d='M8 15h1'/%3E%3Cpath d='M15 9h1'/%3E%3Cpath d='M15 12h1'/%3E%3Cpath d='M15 15h1'/%3E%3Cpath d='M10 21v-3h4v3'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+
+.fi-sidebar-group[data-group-label="Website"] > .fi-sidebar-group-btn::before {
+    content: "";
+
+    display: inline-block;
+
+    width: 1.25rem;
+    height: 1.25rem;
+
+    margin-inline-end: 0.625rem;
+
+    flex-shrink: 0;
+
+    background-color: currentColor;
+
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18'/%3E%3Cpath d='M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z'/%3E%3C/svg%3E") center / contain no-repeat;
+
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18'/%3E%3Cpath d='M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Corporate admin topbar */
+.fi-topbar-ctn {
+    background-color: #14263f;
+    border-bottom: 1px solid #263b55;
+    box-shadow: 0 3px 12px rgb(15 23 42 / 10%);
+}
+
+.fi-topbar {
+    background-color: transparent;
+    color: #ffffff;
+}
+
+.fi-topbar .fi-topbar-item-btn,
+.fi-topbar .fi-icon-btn {
+    border-radius: 8px;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease;
+}
+
+.fi-topbar .fi-topbar-item-btn:hover,
+.fi-topbar .fi-icon-btn:hover {
+    background-color: rgb(255 255 255 / 10%);
+}
+
+.fi-topbar .fi-topbar-item-label {
+    color: #f8fafc;
+}
+
+.fi-topbar .fi-topbar-item-icon {
+    color: #e2e8f0;
+}
+
+/* Keep the topbar usable on narrow screens */
+@media (max-width: 640px) {
+    .fi-topbar-ctn {
+        box-shadow: 0 2px 8px rgb(15 23 42 / 8%);
+    }
+}
+/* Corporate brand */
+.fi-topbar .corporate-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    margin-inline-start: 0.75rem;
+}
+
+.corporate-brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 0.625rem;
+    background: #ffffff;
+    color: #14263f;
+}
+
+.corporate-brand-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.corporate-brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.corporate-brand-name {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+}
+
+.corporate-brand-subtitle {
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    line-height: 1rem;
+}
+
+/* Corporate page heading */
+.corporate-page-header {
+    margin-block: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+}
+
+.corporate-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    color: #64748b;
+    font-size: 0.8125rem;
+}
+
+.corporate-breadcrumb-separator {
+    color: #94a3b8;
+}
+
+.corporate-admin-badge {
+    margin-inline-start: auto;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.corporate-page-heading {
+    margin-top: 1.25rem;
+}
+
+.corporate-page-heading h1 {
+    margin: 0;
+    color: #14263f;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.8rem;
+}
+
+.corporate-page-heading p {
+    margin: 0.5rem 0 0;
+    color: #64748b;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .fi-topbar .corporate-brand {
+        gap: 0.5rem;
+        margin-inline-start: 0.25rem;
+    }
+
+    .corporate-brand-subtitle {
+        display: none;
+    }
+
+    .corporate-page-header {
+        padding: 1rem;
+    }
+
+    .corporate-page-heading h1 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Corporate topbar */
+.fi-topbar {
+    background-color: #14263f;
+}
+
+.fi-topbar nav {
+    background-color: #14263f;
+}
+
+.fi-topbar-ctn {
+    background-color: #14263f;
+}
+
+/* Keep topbar controls visible on the dark background */
+.fi-topbar,
+.fi-topbar button,
+.fi-topbar a {
+    color: #ffffff;
+}
+
+/* =========================================================
+   DEV-PLATFORM | GLASS CORPORATE DESIGN SYSTEM
+   ========================================================= */
+
+:root {
+    --corporate-navy: #101c32;
+    --corporate-navy-light: #192b47;
+    --corporate-blue: #60a5fa;
+    --corporate-cyan: #67e8f9;
+    --corporate-text: #f8fafc;
+    --corporate-muted: #94a3b8;
+    --corporate-border: rgb(148 163 184 / 18%);
+}
+
+/* ---------- Premium topbar ---------- */
+
+.fi-topbar-ctn,
+.fi-topbar {
+    background: var(--corporate-navy) !important;
+}
+
+.fi-topbar {
+    border-bottom: 1px solid var(--corporate-border);
+    box-shadow: 0 8px 30px rgb(2 6 23 / 12%);
+}
+
+/* ---------- Glass brand ---------- */
+
+.fi-topbar .corporate-brand {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+    margin-inline-start: 0.75rem;
+    padding: 0.45rem 0.85rem 0.45rem 0.45rem;
+    overflow: hidden;
+
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: 1rem;
+
+    background: linear-gradient(
+        135deg,
+        rgb(255 255 255 / 9%),
+        rgb(255 255 255 / 3%)
+    );
+
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 6%),
+        0 4px 18px rgb(0 0 0 / 10%);
+
+    transition:
+        border-color 250ms ease,
+        background 250ms ease,
+        box-shadow 250ms ease,
+        transform 250ms ease;
+}
+
+.fi-topbar .corporate-brand:hover {
+    transform: translateY(-1px);
+    border-color: rgb(96 165 250 / 38%);
+
+    background: linear-gradient(
+        135deg,
+        rgb(96 165 250 / 13%),
+        rgb(255 255 255 / 4%)
+    );
+
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 8%),
+        0 8px 24px rgb(2 6 23 / 18%);
+}
+
+.corporate-brand-mark {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    border: 1px solid rgb(255 255 255 / 55%);
+    border-radius: 0.85rem;
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dbeafe
+    );
+
+    color: #14263f;
+
+    box-shadow:
+        0 4px 14px rgb(0 0 0 / 15%),
+        inset 0 1px 1px rgb(255 255 255 / 90%);
+}
+
+.corporate-brand-mark-glow {
+    position: absolute;
+    inset: -50%;
+
+    background: linear-gradient(
+        110deg,
+        transparent 35%,
+        rgb(255 255 255 / 75%) 50%,
+        transparent 65%
+    );
+
+    transform: translateX(-100%) rotate(15deg);
+    animation: corporate-brand-shimmer 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.corporate-brand-icon {
+    position: relative;
+    z-index: 1;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.corporate-brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.corporate-brand-name {
+    color: var(--corporate-text);
+    font-size: 0.95rem;
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 1.2rem;
+    white-space: nowrap;
+}
+
+.corporate-brand-subtitle {
+    color: #b6c6dc;
+    font-size: 0.68rem;
+    font-weight: 450;
+    letter-spacing: 0.015em;
+    line-height: 1rem;
+    white-space: nowrap;
+}
+
+.corporate-brand-indicator {
+    width: 0.4rem;
+    height: 0.4rem;
+    flex-shrink: 0;
+    margin-inline-start: 0.35rem;
+
+    border-radius: 50%;
+    background: #67e8a5;
+
+    box-shadow: 0 0 10px rgb(103 232 165 / 55%);
+
+    animation: corporate-status-pulse 2.8s ease-in-out infinite;
+}
+
+/* ---------- Glass page header ---------- */
+
+.corporate-page-header {
+    position: relative;
+    isolation: isolate;
+    margin-block: 1.25rem 1.75rem;
+    padding: clamp(1.15rem, 2.5vw, 2rem);
+    overflow: hidden;
+
+    border: 1px solid rgb(148 163 184 / 24%);
+    border-radius: 1.25rem;
+
+    background:
+        radial-gradient(
+            ellipse at 100% 0%,
+            rgb(96 165 250 / 12%),
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            rgb(255 255 255 / 96%),
+            rgb(241 245 249 / 88%)
+        );
+
+    box-shadow:
+        0 18px 45px rgb(15 23 42 / 6%),
+        0 3px 10px rgb(15 23 42 / 3%),
+        inset 0 1px 0 rgb(255 255 255 / 95%);
+
+    animation: corporate-header-enter 650ms
+        cubic-bezier(0.2, 0.75, 0.25, 1) both;
+
+    transition:
+        border-color 300ms ease,
+        box-shadow 300ms ease;
+}
+
+@supports (backdrop-filter: blur(16px)) {
+    .corporate-page-header {
+        background-color: rgb(255 255 255 / 76%);
+        backdrop-filter: blur(16px) saturate(145%);
+        -webkit-backdrop-filter: blur(16px) saturate(145%);
+    }
+}
+
+.corporate-page-header:hover {
+    border-color: rgb(96 165 250 / 35%);
+
+    box-shadow:
+        0 22px 55px rgb(15 23 42 / 8%),
+        0 4px 14px rgb(15 23 42 / 4%),
+        inset 0 1px 0 rgb(255 255 255 / 95%);
+}
+
+.corporate-header-glow {
+    position: absolute;
+    z-index: -1;
+    top: -7rem;
+    inset-inline-end: -5rem;
+
+    width: 18rem;
+    height: 18rem;
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgb(96 165 250 / 16%),
+        rgb(103 232 249 / 5%) 45%,
+        transparent 70%
+    );
+
+    filter: blur(12px);
+    pointer-events: none;
+
+    animation: corporate-glow-float 9s ease-in-out infinite alternate;
+}
+
+.corporate-header-content {
+    position: relative;
+}
+
+/* ---------- Breadcrumb ---------- */
+
+.corporate-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+
+    color: #64748b;
+    font-size: 0.8rem;
+    line-height: 1.4rem;
+}
+
+.corporate-breadcrumb-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #64748b;
+    font-weight: 550;
+}
+
+.corporate-breadcrumb-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.corporate-breadcrumb-separator {
+    width: 0.85rem;
+    height: 0.85rem;
+    color: #94a3b8;
+}
+
+.corporate-breadcrumb-current {
+    color: #172b49;
+    font-weight: 700;
+}
+
+.corporate-admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-inline-start: auto;
+    padding: 0.35rem 0.7rem;
+
+    border: 1px solid rgb(59 130 246 / 18%);
+    border-radius: 999px;
+
+    background: linear-gradient(
+        135deg,
+        rgb(239 246 255 / 95%),
+        rgb(219 234 254 / 70%)
+    );
+
+    color: #1d4ed8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.corporate-status-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+/* ---------- Main heading ---------- */
+
+.corporate-page-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: clamp(1.4rem, 3vw, 2rem);
+}
+
+.corporate-heading-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    flex-shrink: 0;
+
+    border: 1px solid rgb(96 165 250 / 25%);
+    border-radius: 1.1rem;
+
+    background: linear-gradient(
+        145deg,
+        #1e3a5f,
+        #14263f
+    );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 8px 20px rgb(20 38 63 / 20%),
+        inset 0 1px 0 rgb(255 255 255 / 12%);
+
+    transition:
+        transform 300ms ease,
+        box-shadow 300ms ease;
+}
+
+.corporate-heading-icon svg {
+    width: 1.65rem;
+    height: 1.65rem;
+}
+
+.corporate-page-header:hover .corporate-heading-icon {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgb(20 38 63 / 24%),
+        inset 0 1px 0 rgb(255 255 255 / 12%);
+}
+
+.corporate-heading-copy {
+    min-width: 0;
+}
+
+.corporate-heading-eyebrow {
+    display: block;
+    margin-bottom: 0.4rem;
+
+    color: #64748b;
+    font-size: 0.67rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    line-height: 1rem;
+}
+
+.corporate-page-heading h1 {
+    margin: 0;
+
+    color: #14263f;
+    font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+    font-weight: 780;
+    letter-spacing: -0.045em;
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+}
+
+.corporate-page-heading p {
+    margin: 0.55rem 0 0;
+
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+/* ---------- Footer detail ---------- */
+
+.corporate-header-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.6rem;
+    padding-top: 1rem;
+
+    border-top: 1px solid rgb(148 163 184 / 20%);
+
+    color: #64748b;
+    font-size: 0.73rem;
+    font-weight: 550;
+}
+
+.corporate-header-accent {
+    width: 1.35rem;
+    height: 2px;
+    border-radius: 999px;
+
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #67e8f9
+    );
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes corporate-header-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes corporate-glow-float {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(-12px, 10px, 0) scale(1.08);
+    }
+}
+
+@keyframes corporate-brand-shimmer {
+    0%, 72%, 100% {
+        transform: translateX(-100%) rotate(15deg);
+    }
+
+    88% {
+        transform: translateX(100%) rotate(15deg);
+    }
+}
+
+@keyframes corporate-status-pulse {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgb(103 232 165 / 50%);
+    }
+
+    50% {
+        opacity: 0.65;
+        box-shadow: 0 0 4px rgb(103 232 165 / 25%);
+    }
+}
+
+/* ---------- Responsive layout ---------- */
+
+@media (max-width: 640px) {
+    .fi-topbar .corporate-brand {
+        gap: 0.55rem;
+        margin-inline-start: 0.25rem;
+        padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+    }
+
+    .corporate-brand-mark {
+        width: 2.3rem;
+        height: 2.3rem;
+        border-radius: 0.7rem;
+    }
+
+    .corporate-brand-icon {
+        width: 1.3rem;
+        height: 1.3rem;
+    }
+
+    .corporate-brand-name {
+        font-size: 0.85rem;
+    }
+
+    .corporate-brand-subtitle {
+        display: none;
+    }
+
+    .corporate-brand-indicator {
+        width: 0.35rem;
+        height: 0.35rem;
+    }
+
+    .corporate-page-header {
+        margin-block: 0.85rem 1.25rem;
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+
+    .corporate-breadcrumb {
+        gap: 0.4rem;
+        font-size: 0.74rem;
+    }
+
+    .corporate-admin-badge {
+        padding: 0.28rem 0.5rem;
+        font-size: 0.68rem;
+    }
+
+    .corporate-page-heading {
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .corporate-heading-icon {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 0.85rem;
+    }
+
+    .corporate-heading-icon svg {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+
+    .corporate-heading-eyebrow {
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+    }
+
+    .corporate-page-heading p {
+        font-size: 0.82rem;
+    }
+
+    .corporate-header-footer {
+        margin-top: 1.2rem;
+    }
+}
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .corporate-page-header,
+    .corporate-header-glow,
+    .corporate-brand-mark-glow,
+    .corporate-brand-indicator {
+        animation: none !important;
+    }
+
+    .corporate-brand,
+    .corporate-heading-icon,
+    .corporate-page-header {
+        transition: none !important;
+    }
+}
+/* Hide the default Filament topbar logo only */
+.fi-topbar .fi-topbar-start > a:has(.fi-logo) {
+    display: none !important;
+}
+
+/* Dynamic corporate header: authenticated user */
+.corporate-header-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.corporate-header-footer-divider {
+    width: 1px;
+    height: 30px;
+    background: rgb(148 163 184 / 25%);
+    margin-inline: 0.4rem;
+}
+
+.corporate-header-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-inline-start: auto;
+    min-width: 0;
+}
+
+.corporate-header-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 14px;
+    background: linear-gradient(145deg, #334155, #172033);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: 0 5px 18px rgb(15 23 42 / 18%);
+}
+
+.corporate-header-user-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.corporate-header-user-name {
+    overflow: hidden;
+    color: var(--fi-color-text, #e5e7eb);
+    font-size: 0.85rem;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.corporate-header-user-role {
+    overflow: hidden;
+    color: #94a3b8;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .corporate-header-footer-divider {
+        display: none;
+    }
+
+    .corporate-header-user {
+        flex-basis: 100%;
+        margin-inline-start: 0;
+        padding-top: 0.5rem;
+    }
+}
+
+/* Improve profile text contrast in light and dark modes */
+.corporate-header-user-name {
+    color: #111827 !important;
+    font-size: 0.9rem;
+    font-weight: 750;
+    line-height: 1.4;
+    opacity: 1 !important;
+    text-shadow: none;
+}
+
+.corporate-header-user-role {
+    color: #475569 !important;
+    font-size: 0.78rem;
+    font-weight: 650;
+    line-height: 1.4;
+    opacity: 1 !important;
+}
+
+/* Dark mode */
+.dark .corporate-header-user-name,
+.fi-theme-dark .corporate-header-user-name {
+    color: #101c32 !important;
+}
+
+.dark .corporate-header-user-role,
+.fi-theme-dark .corporate-header-user-role {
+    color: #056d1f !important;
+}
+
+/* Keep profile text readable on small screens */
+.corporate-header-user-copy {
+    min-width: 0;
+    gap: 4px;
+}
+
+.corporate-header-user-name,
+.corporate-header-user-role {
+    overflow-wrap: anywhere;
+}

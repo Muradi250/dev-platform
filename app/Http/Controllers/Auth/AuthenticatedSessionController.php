@@ -33,13 +33,19 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-
+        $intendedPath = parse_url(
+            (string) $request->session()->get('url.intended'),
+            PHP_URL_PATH
+        );
+        $isPendingInvitationAcceptance = $user->status === 'pending'
+            && is_string($intendedPath)
+            && str_starts_with($intendedPath, '/organization-invitations/');
 
         // ==========================
         // USER STATUS CONTROL
         // ==========================
 
-        if ($user->status !== 'active') {
+        if ($user->status !== 'active' && ! $isPendingInvitationAcceptance) {
 
             return redirect()
                 ->route('account.status', [

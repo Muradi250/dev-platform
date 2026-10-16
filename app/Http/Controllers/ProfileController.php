@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
 
 class ProfileController extends Controller
 {
@@ -25,26 +29,65 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $request->user()->fill($request->validated());
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $validated = $request->validated();
+        $oldAvatar = $user->avatar;
+        $newAvatar = null;
 
-    if ($request->user()->isDirty('email')) {
-        $request->user()->email_verified_at = null;
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        if ($request->hasFile('avatar')) {
+            $newAvatar = $request->file('avatar')->storePublicly('avatars', 'public');
+
+            if (! is_string($newAvatar)) {
+                throw new RuntimeException('Unable to store the uploaded profile image.');
+            }
+
+            $user->avatar = $newAvatar;
+        } elseif ($request->boolean('remove_avatar')) {
+            $user->avatar = null;
+        }
+
+        $user->save();
+
+        if ($oldAvatar && ($newAvatar || $request->boolean('remove_avatar'))) {
+            $this->deleteAvatarFile($oldAvatar);
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    if ($request->hasFile('avatar')) {
-        $file = $request->file('avatar');
-        $filename = time().'.'.$file->getClientOriginalExtension();
+    private function deleteAvatarFile(string $avatar): void
+    {
+        if (str_starts_with($avatar, 'avatars/')) {
+            $disk = Storage::disk('public');
 
-        $file->move(public_path('uploads/avatars'), $filename);
+            if ($disk->exists($avatar) && ! $disk->delete($avatar)) {
+                Log::warning('Unable to delete a replaced profile image.', [
+                    'avatar' => $avatar,
+                ]);
+            }
 
-        $request->user()->avatar = $filename;
+            return;
+        }
+
+        $legacyPath = public_path('uploads/avatars/' . basename($avatar));
+
+        if (is_file($legacyPath) && ! unlink($legacyPath)) {
+            Log::warning('Unable to delete a legacy profile image.', [
+                'avatar' => basename($avatar),
+            ]);
+        }
     }
-
-    $request->user()->save();
-
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
 
     /**
      * Delete the user's account.

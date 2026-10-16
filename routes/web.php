@@ -7,6 +7,7 @@ use App\Http\Controllers\BrainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\OrganizationInvitationController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -174,12 +175,27 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 
+Route::middleware('auth')->group(function () {
+    Route::get('/organization-invitations/{token}', [
+        OrganizationInvitationController::class,
+        'show',
+    ])
+    ->middleware('signed')
+    ->name('organization-invitations.show');
+
+    Route::post('/organization-invitations/{token}', [
+        OrganizationInvitationController::class,
+        'accept',
+    ])
+    ->middleware('signed')
+    ->name('organization-invitations.accept');
+});
+
 Route::middleware([
     'auth',
     'status',
 ])
 ->group(function () {
-
 
     /*
     |--------------------------------------------------------------------------
@@ -267,4 +283,3 @@ Route::post('/admin/locale', [
     'switch',
 ])
 ->name('admin.locale');
-

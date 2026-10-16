@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivityLog extends Model
 {
@@ -10,10 +11,22 @@ class ActivityLog extends Model
         'user_id',
         'action',
         'description',
+        'category',
+        'severity',
+        'icon',
+        'module',
+        'model_type',
+        'model_id',
         'ip_address',
+        'user_agent',
+        'context',
     ];
 
-    public function user()
+    protected $casts = [
+        'context' => 'array',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

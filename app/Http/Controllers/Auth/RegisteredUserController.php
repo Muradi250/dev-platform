@@ -157,12 +157,9 @@ class RegisteredUserController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        return redirect()
-            ->route('dashboard', [
-
-                'locale' => $locale,
-
-            ]);
+        return redirect()->intended(
+            route('dashboard', ['locale' => $locale])
+        );
 
     }
 

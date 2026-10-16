@@ -16,16 +16,17 @@
     <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
-        @if($user->avatar)
-    <div class="mb-4">
-        <img
-            src="{{ asset('uploads/avatars/' . $user->avatar) }}"
-            alt="Profile Image"
-            width="120"
-            class="rounded-full border"
-        >
-    </div>
-@endif
+        @if ($user->avatar && $user->getFilamentAvatarUrl())
+            <div class="mb-4">
+                <img
+                    src="{{ $user->getFilamentAvatarUrl() }}"
+                    alt="Profile Image"
+                    width="120"
+                    height="120"
+                    class="rounded-full border object-cover"
+                >
+            </div>
+        @endif
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -56,10 +57,38 @@
                 </div>
             @endif
         </div>
-<div>
-    <x-input-label for="avatar" value="Profile Image" />
-    <input id="avatar" name="avatar" type="file" class="mt-1 block w-full" />
-</div>
+        <div>
+            <x-input-label for="avatar" value="Profile Image" />
+            <input
+                id="avatar"
+                name="avatar"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                class="mt-1 block w-full"
+            />
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                JPG, PNG, or WebP; maximum 5 MB.
+            </p>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+        </div>
+
+        @if ($user->avatar)
+            <div>
+                <label for="remove_avatar" class="inline-flex items-center gap-2">
+                    <input
+                        id="remove_avatar"
+                        name="remove_avatar"
+                        type="checkbox"
+                        value="1"
+                        @checked(old('remove_avatar'))
+                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                        Remove profile photo
+                    </span>
+                </label>
+            </div>
+        @endif
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

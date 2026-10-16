@@ -9,8 +9,8 @@ return [
     |
     | This file is for storing the credentials for third party services such
     | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
+    | location for this type of information, allowing packages to have a
+    | conventional file to locate the various service credentials.
     |
     */
 
@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+
+        'translation_model' => env(
+            'OPENAI_TRANSLATION_MODEL',
+            'gpt-5.6-luna'
+        ),
+
+        'translation_timeout' => env(
+            'OPENAI_TRANSLATION_TIMEOUT',
+            90
+        ),
+    ],
 ];

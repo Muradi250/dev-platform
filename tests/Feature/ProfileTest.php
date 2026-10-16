@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -59,6 +61,61 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_profile_photo_can_be_replaced(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create([
+            'avatar' => 'avatars/old-photo.png',
+        ]);
+        Storage::disk('public')->put($user->avatar, 'old photo');
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => UploadedFile::fake()->image('new-photo.png'),
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertNotSame('avatars/old-photo.png', $user->avatar);
+        Storage::disk('public')->assertExists($user->avatar);
+        Storage::disk('public')->assertMissing('avatars/old-photo.png');
+        $this->assertNotNull($user->getFilamentAvatarUrl());
+    }
+
+    public function test_profile_photo_can_be_removed(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create([
+            'avatar' => 'avatars/current-photo.png',
+        ]);
+        Storage::disk('public')->put($user->avatar, 'photo');
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'remove_avatar' => '1',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $this->assertNull($user->refresh()->avatar);
+        Storage::disk('public')->assertMissing('avatars/current-photo.png');
+        $this->assertNull($user->getFilamentAvatarUrl());
     }
 
     public function test_user_can_delete_their_account(): void

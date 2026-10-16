@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Authorization\PermissionRegistry;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -13,35 +14,21 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // پاک کردن کش permission ها (خیلی مهم)
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $permissions = [
-            // Users
-            'users.view',
-            'users.create',
-            'users.edit',
-            'users.delete',
+        $permissions = PermissionRegistry::all();
 
-            // Roles
-            'roles.view',
-            'roles.create',
-            'roles.edit',
-            'roles.delete',
-
-            // (در آینده راحت اضافه می‌کنی)
-            // 'posts.view',
-            // 'posts.create',
-            // 'settings.manage',
-        ];
-
-        foreach ($permissions as $permission) {
+        foreach (array_keys($permissions) as $permission) {
             Permission::firstOrCreate([
                 'name' => $permission,
                 'guard_name' => 'web',
             ]);
         }
 
-        $this->command->info('Permissions seeded successfully.');
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        $this->command->info(
+            count($permissions) . ' permissions seeded successfully.'
+        );
     }
 }
