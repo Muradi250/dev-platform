@@ -9,12 +9,14 @@ class RoleDistributionChart extends ChartWidget
 {
     protected ?string $heading = 'Role Distribution';
 
+    protected ?string $maxHeight = '320px';
+
     protected function getData(): array
     {
         $superAdmin = User::role('super-admin')->count();
-        $admin      = User::role('admin')->count();
-        $manager    = User::role('manager')->count();
-        $user       = User::role('user')->count();
+        $admin = User::role('admin')->count();
+        $manager = User::role('manager')->count();
+        $user = User::role('user')->count();
 
         $total = $superAdmin + $admin + $manager + $user;
 

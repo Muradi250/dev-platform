@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\SecurityDelegations\Tables;
 
+use App\Models\SecurityDelegation;
+use App\Models\User;
+use App\Services\SecurityDelegationService;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class SecurityDelegationsTable
 {
@@ -99,7 +103,7 @@ class SecurityDelegationsTable
                 |--------------------------------------------------------------------------
                 */
 
-                TextColumn::make('status')
+                TextColumn::make('effective_status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -115,8 +119,7 @@ class SecurityDelegationsTable
                         'expired' => 'heroicon-o-exclamation-circle',
                         'revoked' => 'heroicon-o-no-symbol',
                         default => 'heroicon-o-question-mark-circle',
-                    })
-                    ->sortable(),
+                    }),
 
                 /*
                 |--------------------------------------------------------------------------
@@ -141,7 +144,14 @@ class SecurityDelegationsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(function (SecurityDelegation $record): bool {
+                        $actor = Auth::user();
+
+                        return $actor instanceof User
+                            && app(SecurityDelegationService::class)->canManage($actor, $record)
+                            && ! in_array($record->effective_status, ['revoked', 'expired'], true);
+                    }),
             ]);
     }
 }

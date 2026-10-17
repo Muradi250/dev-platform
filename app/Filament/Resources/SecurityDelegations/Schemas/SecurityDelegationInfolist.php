@@ -31,7 +31,7 @@ class SecurityDelegationInfolist
                             ->prefix('#')
                             ->weight('bold'),
 
-                        TextEntry::make('status')
+                        TextEntry::make('effective_status')
                             ->label('Security Status')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {

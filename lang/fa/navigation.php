@@ -68,5 +68,6 @@ return [
 
     'login'=>'ورود',
     'request_demo'=>'درخواست دمو',
+    'demo_requests'=>'درخواست‌های دمو',
 
 ];

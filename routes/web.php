@@ -4,6 +4,7 @@
 use App\Http\Controllers\AdminLocaleController;
 use App\Http\Controllers\Auth\AccountStatusController;
 use App\Http\Controllers\BrainController;
+use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\TestimonialController;
@@ -88,6 +89,25 @@ Route::prefix('{locale}')
             'store',
         ])
         ->name('testimonials.store');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Demo Requests
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/demo-request', [
+            DemoRequestController::class,
+            'create',
+        ])
+        ->name('demo-requests.create');
+
+        Route::post('/demo-request', [
+            DemoRequestController::class,
+            'store',
+        ])
+        ->middleware('throttle:5,1')
+        ->name('demo-requests.store');
 
 
         /*

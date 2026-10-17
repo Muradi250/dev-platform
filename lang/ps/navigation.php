@@ -76,6 +76,7 @@ return [
 
     'login'=>'ننوتل',
     'request_demo'=>'ډیمو غوښتنه',
+    'demo_requests'=>'د ډیمو غوښتنې',
 
 
 ];

@@ -77,6 +77,13 @@
         $pageTitle === 'Dashboard Overview' =>
             'heroicon-o-squares-2x2',
 
+        str_contains($iconContext, 'delegation') =>
+            'heroicon-o-shield-check',
+
+        str_contains($iconContext, 'activity log'),
+        str_contains($iconContext, 'audit') =>
+            'heroicon-o-clipboard-document-check',
+
         str_contains($iconContext, 'role') =>
             'heroicon-o-shield-check',
 
@@ -237,6 +244,11 @@
             </span>
 
             <span class="corporate-admin-badge">
+                <x-filament::icon
+                    icon="heroicon-o-shield-check"
+                    class="corporate-header-admin-icon"
+                    aria-hidden="true"
+                />
                 <span class="corporate-status-dot"></span>
                 Admin Panel
             </span>
@@ -260,11 +272,39 @@
                         : 'Manage and review ' . \Illuminate\Support\Str::lower($pageTitle) . ' in your workspace.' }}
                 </p>
             </div>
+
+            <aside class="corporate-header-context" aria-label="Workspace status">
+                <div class="corporate-header-context-label">
+                    <x-filament::icon
+                        icon="heroicon-o-shield-check"
+                        aria-hidden="true"
+                    />
+                    Workspace status
+                </div>
+
+                <div class="corporate-header-context-status">
+                    <span class="corporate-header-context-dot" aria-hidden="true"></span>
+                    <span>Admin session active</span>
+                </div>
+
+                <div class="corporate-header-context-date">
+                    <x-filament::icon
+                        icon="heroicon-o-calendar-days"
+                        aria-hidden="true"
+                    />
+                    <span>{{ now()->format('M d, Y') }}</span>
+                </div>
+            </aside>
         </div>
 
         <div class="corporate-header-footer">
             <span class="corporate-header-accent"></span>
 
+            <x-filament::icon
+                icon="heroicon-o-building-office-2"
+                class="corporate-header-workspace-icon"
+                aria-hidden="true"
+            />
             <span>Dev-Platform Workspace</span>
 
             <span class="corporate-header-footer-divider"></span>
@@ -280,6 +320,11 @@
                     </span>
 
                     <span class="corporate-header-user-role">
+                        <x-filament::icon
+                            icon="heroicon-o-identification"
+                            class="corporate-header-role-icon"
+                            aria-hidden="true"
+                        />
                         {{ $userRole }}
                     </span>
                 </div>

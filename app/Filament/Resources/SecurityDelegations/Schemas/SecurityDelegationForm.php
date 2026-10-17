@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class SecurityDelegationForm
 {
@@ -28,7 +29,9 @@ class SecurityDelegationForm
                                 'delegatedToUser',
                                 'name',
                                 modifyQueryUsing: function ($query) {
-                                    $query->where('is_owner', false);
+                                    $query
+                                        ->where('is_owner', false)
+                                        ->where('status', 'active');
                                 },
                             )
                             ->getOptionLabelFromRecordUsing(
@@ -63,6 +66,10 @@ class SecurityDelegationForm
                             ->relationship(
                                 'parentDelegation',
                                 'id',
+                                modifyQueryUsing: fn ($query) => $query
+                                    ->where('delegated_to_user_id', Auth::id())
+                                    ->where('status', 'active')
+                                    ->whereNull('revoked_at'),
                             )
                             ->getOptionLabelFromRecordUsing(
                                 fn (SecurityDelegation $record): string =>
@@ -111,11 +118,10 @@ class SecurityDelegationForm
                             ->options([
                                 'active' => 'Active',
                                 'pending' => 'Pending',
-                                'expired' => 'Expired',
-                                'revoked' => 'Revoked',
                             ])
                             ->default('active')
-                            ->required(),
+                            ->required()
+                            ->helperText('Pending delegations grant no access until activated.'),
 
                         DateTimePicker::make('starts_at')
                             ->label('Starts At')

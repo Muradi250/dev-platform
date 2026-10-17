@@ -3,11 +3,13 @@
 namespace App\Filament\Resources\ActivityLogs;
 
 use App\Filament\Resources\ActivityLogs\Pages\ListActivityLogs;
+use App\Filament\Resources\ActivityLogs\Pages\ViewActivityLog;
+use App\Filament\Resources\ActivityLogs\Schemas\ActivityLogInfolist;
 use App\Models\ActivityLog;
 use BackedEnum;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -17,8 +19,7 @@ class ActivityLogResource extends Resource
 {
     protected static ?string $model = ActivityLog::class;
 
-    protected static string|BackedEnum|null $navigationIcon =
-        Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = null;
 
     protected static UnitEnum|string|null $navigationGroup = 'Security & Audit';
 
@@ -33,6 +34,11 @@ class ActivityLogResource extends Resource
         return $schema;
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return ActivityLogInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -44,7 +50,7 @@ class ActivityLogResource extends Resource
 
                 TextColumn::make('user.name')
                     ->label('User')
-                    ->default('System')
+                    ->default('System / deleted user')
                     ->searchable(),
 
                 TextColumn::make('action')
@@ -141,6 +147,9 @@ class ActivityLogResource extends Resource
                     ->label('User')
                     ->relationship('user', 'name'),
             ])
+            ->recordActions([
+                ViewAction::make(),
+            ])
             ->defaultSort('created_at', 'desc');
     }
 
@@ -153,6 +162,7 @@ class ActivityLogResource extends Resource
     {
         return [
             'index' => ListActivityLogs::route('/'),
+            'view' => ViewActivityLog::route('/{record}'),
         ];
     }
 }

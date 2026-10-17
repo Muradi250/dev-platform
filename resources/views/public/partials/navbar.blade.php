@@ -299,6 +299,18 @@ return url($url);
 
 };
 
+$resolveHeaderActionUrl = function ($text, $url) use ($makeUrl, $locale) {
+$path = parse_url(trim((string) $url), PHP_URL_PATH);
+$isGetStartedAction = \Illuminate\Support\Str::lower(trim((string) $text)) === 'get started';
+$isRegistrationPath = is_string($path) && trim($path, '/') === 'register';
+
+if ($isGetStartedAction || $isRegistrationPath) {
+    return route('register', ['locale' => $locale]);
+}
+
+return $makeUrl($url);
+};
+
 $localeUrl = function ($targetLocale) use ($page) {
 
 
@@ -824,7 +836,7 @@ style="
             @if ($showCta && filled($ctaText))
 
                 <a
-                    href="{{ $makeUrl($ctaUrl) }}"
+                    href="{{ $resolveHeaderActionUrl($ctaText, $ctaUrl) }}"
                     class="
                         px-3
                         py-2
@@ -850,7 +862,7 @@ style="
             @if ($showHeaderAction && filled($headerActionText))
 
                 <a
-                    href="{{ $makeUrl($headerActionUrl) }}"
+                    href="{{ $resolveHeaderActionUrl($headerActionText, $headerActionUrl) }}"
                     class="
                         inline-flex
                         items-center
@@ -897,7 +909,7 @@ style="
             </a>
 
             <a
-                href="#"
+                href="{{ route('demo-requests.create', ['locale' => $locale]) }}"
                 class="
                     px-3
                     py-2
@@ -1846,7 +1858,7 @@ style="
         @if ($showCta && filled($ctaText))
 
             <a
-                href="{{ $makeUrl($ctaUrl) }}"
+                href="{{ $resolveHeaderActionUrl($ctaText, $ctaUrl) }}"
                 class="
                     block
                     w-full
@@ -1868,7 +1880,7 @@ style="
         @if ($showHeaderAction && filled($headerActionText))
 
             <a
-                href="{{ $makeUrl($headerActionUrl) }}"
+                href="{{ $resolveHeaderActionUrl($headerActionText, $headerActionUrl) }}"
                 class="
                     block
                     w-full
@@ -1908,7 +1920,7 @@ style="
             </a>
 
             <a
-                href="#"
+                href="{{ route('demo-requests.create', ['locale' => $locale]) }}"
                 class="
                     block
                     w-full

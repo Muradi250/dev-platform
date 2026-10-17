@@ -165,12 +165,12 @@ $groupPresentations = [
             white-space: nowrap;
         }
 
-        /* One full-width card per row on every screen */
+        /* Keep the module directory compact on wider screens. */
         .dashboard-module-directory .module-card-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             align-items: stretch;
-            gap: 1rem;
+            gap: 0.85rem;
             width: 100%;
             min-width: 0;
         }
@@ -341,6 +341,10 @@ $groupPresentations = [
 
         /* Tablet */
         @media (max-width: 1024px) {
+            .dashboard-module-directory .module-card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
             .dashboard-module-directory .module-group + .module-group {
                 margin-top: 1.5rem;
             }
@@ -356,6 +360,10 @@ $groupPresentations = [
 
         /* Mobile */
         @media (max-width: 640px) {
+            .dashboard-module-directory .module-card-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
             .dashboard-module-directory .module-group + .module-group {
                 margin-top: 1.25rem;
             }

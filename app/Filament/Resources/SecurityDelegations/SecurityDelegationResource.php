@@ -13,7 +13,6 @@ use App\Models\SecurityDelegation;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -21,8 +20,7 @@ class SecurityDelegationResource extends Resource
 {
     protected static ?string $model = SecurityDelegation::class;
 
-    protected static string|BackedEnum|null $navigationIcon =
-        Heroicon::OutlinedShieldCheck;
+    protected static string|BackedEnum|null $navigationIcon = null;
 
     protected static ?string $navigationLabel = 'Delegations';
 
@@ -61,4 +59,3 @@ class SecurityDelegationResource extends Resource
         ];
     }
 }
-

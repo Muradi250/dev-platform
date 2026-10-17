@@ -2,23 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Notifications\VerifyEmailNotification;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
+use Filament\Panel;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
-use Filament\Models\Contracts\HasAvatar;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
+use UnitEnum;
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /*
     |--------------------------------------------------------------------------
@@ -92,8 +96,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
 
         $filename = basename($avatar);
 
-        return is_file(public_path('uploads/avatars/' . $filename))
-            ? asset('uploads/avatars/' . $filename)
+        return is_file(public_path('uploads/avatars/'.$filename))
+            ? asset('uploads/avatars/'.$filename)
             : null;
     }
 
@@ -148,6 +152,113 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         return $this->status === 'banned';
     }
 
+    public function checkPermissionTo($permission, ?string $guardName = null): bool
+    {
+        try {
+            if ($this->hasPermissionTo($permission, $guardName)) {
+                return true;
+            }
+        } catch (PermissionDoesNotExist) {
+            return false;
+        }
+
+        return $this->hasDelegatedPermissionTo($permission, $guardName);
+    }
+
+    public function hasPermissionInOrganization(
+        $permission,
+        ?int $organizationId,
+        ?string $guardName = null,
+    ): bool {
+        if ($this->checkPermissionTo($permission, $guardName)) {
+            return true;
+        }
+
+        if ($organizationId === null) {
+            return false;
+        }
+
+        if (! $this->isActive()) {
+            return false;
+        }
+
+        $permissionId = $this->resolvePermissionId($permission, $guardName);
+
+        if ($permissionId === null) {
+            return false;
+        }
+
+        return SecurityDelegation::query()
+            ->where('delegated_to_user_id', $this->getKey())
+            ->where('organization_id', $organizationId)
+            ->effectiveAt()
+            ->with('parentDelegation')
+            ->get()
+            ->contains(fn (SecurityDelegation $delegation): bool => $delegation->grantsPermission($permissionId)
+            );
+    }
+
+    private function hasDelegatedPermissionTo($permission, ?string $guardName = null): bool
+    {
+        if (! $this->isActive()) {
+            return false;
+        }
+
+        $permissionId = $this->resolvePermissionId($permission, $guardName);
+
+        if ($permissionId === null) {
+            return false;
+        }
+
+        return SecurityDelegation::query()
+            ->where('delegated_to_user_id', $this->getKey())
+            ->whereNull('organization_id')
+            ->effectiveAt()
+            ->with('parentDelegation')
+            ->get()
+            ->contains(fn (SecurityDelegation $delegation): bool => $delegation->grantsPermission($permissionId)
+            );
+    }
+
+    private function resolvePermissionId($permission, ?string $guardName): ?int
+    {
+        if ($permission instanceof Permission) {
+            return $permission->guard_name === ($guardName ?? $this->getDefaultGuardName())
+                ? (int) $permission->getKey()
+                : null;
+        }
+
+        if ($permission instanceof UnitEnum) {
+            $permission = $permission instanceof \BackedEnum
+                ? $permission->value
+                : $permission->name;
+        }
+
+        $permissionModel = app(PermissionRegistrar::class)->getPermissionClass();
+
+        if (is_int($permission)) {
+            $record = $permissionModel::query()->find($permission);
+
+            return $record !== null
+                && $record->guard_name === ($guardName ?? $this->getDefaultGuardName())
+                    ? (int) $record->getKey()
+                    : null;
+        }
+
+        if (! is_string($permission)) {
+            return null;
+        }
+
+        try {
+            return (int) $permissionModel::findByName(
+                $permission,
+                $guardName ?? $this->getDefaultGuardName(),
+            )->getKey();
+        } catch (PermissionDoesNotExist) {
+            return null;
+        }
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Email Verification
@@ -157,7 +268,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function sendEmailVerificationNotification()
     {
         $this->notify(
-            new VerifyEmailNotification()
+            new VerifyEmailNotification
         );
     }
 
@@ -179,8 +290,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         );
 
         $this->notify(
-            new class($url) extends ResetPassword {
-
+            new class($url) extends ResetPassword
+            {
                 public function __construct(
                     protected string $resetUrl
                 ) {}
@@ -219,7 +330,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
 
         static::creating(function ($user) {
 
-            if (!$user->status) {
+            if (! $user->status) {
                 $user->status = 'pending';
             }
 

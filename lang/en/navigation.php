@@ -74,6 +74,7 @@ return [
 
     'login' => 'Login',
     'request_demo' => 'Request Demo',
+    'demo_requests' => 'Demo Requests',
 
 
 ];

@@ -2,12 +2,15 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\SetAdminLocale;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -46,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->login()
             ->authGuard('web')
+            ->databaseNotifications()
 
             /*
             |--------------------------------------------------------------------------
@@ -54,13 +58,18 @@ class AdminPanelProvider extends PanelProvider
             */
 
             ->renderHook(
-                \Filament\View\PanelsRenderHook::TOPBAR_LOGO_AFTER,
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
                 fn () => view('filament.admin.corporate-brand')
             )
 
             ->renderHook(
-                \Filament\View\PanelsRenderHook::PAGE_START,
+                PanelsRenderHook::PAGE_START,
                 fn () => view('filament.admin.corporate-header')
+            )
+
+            ->renderHook(
+                PanelsRenderHook::FOOTER,
+                fn () => view('filament.admin.footer')
             )
 
             /*
@@ -70,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
             */
 
             ->renderHook(
-                \Filament\View\PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
                 fn () => view('filament.admin.language-switcher')
             )
 
@@ -98,6 +107,14 @@ class AdminPanelProvider extends PanelProvider
                 in: app_path('Filament/Resources'),
                 for: 'App\Filament\Resources'
             )
+
+            ->navigationGroups([
+                NavigationGroup::make('Access & Security')
+                    ->icon('heroicon-o-shield-check'),
+                NavigationGroup::make('Security & Audit')
+                    ->icon('heroicon-o-clipboard-document-check'),
+            ])
+            ->sidebarCollapsibleOnDesktop()
 
             /*
             |--------------------------------------------------------------------------
@@ -138,7 +155,7 @@ class AdminPanelProvider extends PanelProvider
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
 
-                \App\Http\Middleware\SetAdminLocale::class,
+                SetAdminLocale::class,
 
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
